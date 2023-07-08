@@ -5,8 +5,11 @@ const app = express();
 // express 함수를 호출하여 새로운 express 어플리케이션 객체 'app'을 생성
 
 app.set("view engine", "pug");
-app.set("views", __dirname + "/src/views");
+app.set("views", __dirname + "/views");
+// app 객체의 set 메서드를 사용하여 Express 애플리케이션에서 Pug 뷰 엔진을 설정하고, 
+// 뷰 파일의 경로를 지정한다. 
 
+app.get("/", (req, res) => res.render("home"));
  
 const handleListen = () => console.log('Listening on http://localhost:3000');
 app.listen(3000, handleListen);

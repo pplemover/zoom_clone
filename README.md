@@ -82,15 +82,37 @@
 
   #### 2. **Frontend Setup**
 
-  다음으로, Express 애플리케이션의 뷰를 렌더링할 수 있도록 세팅한다.
+  다음으로, Express 애플리케이션의 뷰를 렌더링할 수 있도록 세팅한다. 이를 위한 프로젝트 구조는 다음과 같다. 
+
+  ```bash
+  ├── .gitignore
+  ├── nodemon.json
+  ├── babel.config.json
+  ├── src
+  │   ├── server.js
+  │   ├── views
+  │         ├── home.pug
+  │   ├── public
+  │         ├── js
+  │             ├── app.js    
+  └── README.md
+  ``` 
 
   src/server.js 의 아래 코드는 app 객체의 set 메서드를 사용하여 Express 애플리케이션에서 Pug 뷰 엔진을 설정하고, 뷰 파일의 경로를 지정한다. 
   ```JavaScript
   app.set("view engine", "pug");
-  app.set("views", __dirname + "/src/views");
+  app.set("views", __dirname + "/views");
 
   ```
-  뷰 파일들이 위치한 디렉토리의 경로를 지정할 때, `__dirname`은 현재 실행 중인 스크립트의 디렉토리 경로를 나타내는 Node.js의 내장 변수이다. 즉, 현재 스크립트가 위치한 디렉토리를 기준으로 "src/views" 디렉토리를 지정한다. 따라서 이 디렉토리에 있는 뷰 파일들이 Express 애플리케이션에서 사용될 수 있게 된다. 이렇게 설정된 뷰 엔진과 뷰 파일 경로는 나중에 라우팅과 함께 사용되어 클라이언트에게 동적인 HTML 페이지를 제공하는 데 활용될 것이다.
+  `__dirname`은 현재 실행 중인 스크립트의 디렉토리 경로를 나타내는 Node.js의 내장 변수이다. 즉, 현재 스크립트가 위치한 디렉토리를 기준으로 "src/views" 디렉토리를 지정한다. 위처럼 설정한 뷰 엔진과 뷰 파일 경로는 나중에 라우팅과 함께 사용되어 클라이언트에게 동적인 HTML 페이지를 제공하는 데 활용될 것이다.
+
+
+  아래 코드는 Express 애플리케이션에서 루트 경로("/")에 대한 GET 요청이 들어올 때 'home'이라는 Pug 템플릿을 렌더링하여 클라이언트에게 응답하는 부분이다. 
+  ```JavaScript
+  app.get("/", (req, res) => res.render("home"));
+  ```
+  - app 객체의 get 메서드를 사용하여 루트 경로("/")에 대한 GET 요청 핸드러를 등록합니다. 클라이언트로부터 GET 요청이 들어올 때 핸들러가 실행됩니다.
+  - 핸들러 함수는 요청 객체(req)와 응답 객체(res)를 매개변수로 받고, 'home' 탬플릿을 렌더링하여 클라이언트에게 응답합니다. 
 
 
 
