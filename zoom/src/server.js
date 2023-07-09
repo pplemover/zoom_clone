@@ -13,6 +13,8 @@ app.use("/public", express.static(__dirname + "/public"));
 // /public 경로로 들어오는 모든 요청에 대해 /public 경로 아래에 있는 정적 파일을 제공
 app.get("/", (req, res) => res.render("home"));
 // 루트 경로로 들어오는 GET 요청에 대해 'home' 탬플릿을 렌더링하여 응답함.
+app.get("*", (req, res) => res.redirect("/"));
+//  Catch-all URL을 사용하여 모든 경로에 대한 GET 요청을 "/" 경로로 redirect
  
 const handleListen = () => console.log('Listening on http://localhost:3000');
 app.listen(3000, handleListen);

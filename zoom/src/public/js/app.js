@@ -1,4 +1,1 @@
-hello;
-hello;
-hello;
-
+alert('app.js connection goodtogo');
