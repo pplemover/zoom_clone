@@ -9,7 +9,10 @@ app.set("views", __dirname + "/views");
 // app 객체의 set 메서드를 사용하여 Express 애플리케이션에서 Pug 뷰 엔진을 설정하고, 
 // 뷰 파일의 경로를 지정한다. 
 
+app.use("/public", express.static(__dirname + "/public"));
+// /public 경로로 들어오는 모든 요청에 대해 /public 경로 아래에 있는 정적 파일을 제공
 app.get("/", (req, res) => res.render("home"));
+// 루트 경로로 들어오는 GET 요청에 대해 'home' 탬플릿을 렌더링하여 응답함.
  
 const handleListen = () => console.log('Listening on http://localhost:3000');
 app.listen(3000, handleListen);
