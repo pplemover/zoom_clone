@@ -145,4 +145,6 @@
   - `WebSocket.send(data)`: 서버로 메시지를 보낸다.
   - `WebSocket.close([code[, reason]])`: WebSocket 연결을 닫는다.
 
-  Node.js로 WebSocket 
+  WebSocket 서버를 Node.js로 만들기 위해 ws 패키지를 사용할 예정이다. 터미널에서 `npm i ws` 명령어로 ws를 설치한다. ws 패키지는 WebSocket 프로토콜의 핵심 기능만을 제공하므로 채팅방과 같은 고급 기능을 직접 구현하기는 어렵다. 하지만 ws 패키지를 사용하는 프레임워크가 있는데, 이 프레임워크를 통해 앞으로 만든 모든 기능을 구현할 수 있다. 그전까지는 기본 기능을 테스트하고 WebSocket을 최대한 익히기 위해 ws 패키지만을 사용할 것이다. 
+
+  server.js에서 

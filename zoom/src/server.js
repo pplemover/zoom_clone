@@ -1,5 +1,5 @@
 import express from "express";
-// Es6의 모듈 시스템을 사용하여 'express' 모듈을 불러오기
+import http from 'http';
 
 const app = express();
 // express 함수를 호출하여 새로운 express 어플리케이션 객체 'app'을 생성
@@ -18,4 +18,6 @@ app.get("*", (req, res) => res.redirect("/"));
  
 const handleListen = () => console.log('Listening on http://localhost:3000');
 app.listen(3000, handleListen);
-// 'app' 객체의 listen 메서드를 호출하여 웹 서버를 시작 (3000번 포트에서 실행) 
+// 3000포트로 서버를 시작하고, 서버가 시작될 때 메시지(Listening on~)를 콘솔에 출력
+
+http.createServer(app);
