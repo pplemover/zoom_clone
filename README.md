@@ -184,9 +184,9 @@
   server.js에 추가한 다음 코드는 wss(WebSocket 서버) 객체에 'connection' 이벤트가 발생했을 때 실행될 'handleConnection' 함수를 등록하는 예시이다.
   ```JavaScript
   function handleConnection(socket){
-  console.log(socket); // handleConnection 함수는 WebSocket와의 연결이 확립될 때 호출되고, 해당 함수는 socket(WebSocket객체)를 콘솔창에 출력한다.
+  console.log(socket); // handleConnection 함수는 socket(WebSocket객체)를 콘솔창에 출력한다.
   }
-  wss.on("connection", handleConnection); // on()메서드를 사용해 'connection' 이벤트 리스너를 등록함. connection 이벤트가 발생할 때 'handleConnection' 함수가 실행된다.
+  wss.on("connection", handleConnection); // on()메서드를 사용해 'connection' 이벤트 리스너를 등록함. connection 이벤트가 발생할 때, 즉 WebSocket과의 연결이 확립될 때 'handleConnection' 함수가 실행된다.
   ```
   따라서, 위의 코드는 WebSocket 서버가 실행되고 클라이언트와의 연결이 확립되면 handleConnection 함수를 호출하며, 연결된 클라이언트의 WebSocket 소켓 객체가 socket 매개변수로 전달된다. 이를 통해 handleConnection 함수 내에서 해당 클라이언트와의 통신을 처리하거나 추가 작업을 수행할 수 있습니다.
   
