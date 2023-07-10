@@ -26,5 +26,10 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 // WebSocket.Server 클래스로 웹소켓 서버를 생성. 생성자에는 HTTP 서버 객체 server를 전달하여 웹소켓 서버가 HTTP 서버 위에서 동작하도록 함.
 
+function handleConnection(socket){
+  console.log(socket);
+}
+wss.on("connection", handleConnection);
+
 server.listen(3000, handleListen);
 // HTTP 서버를 3000번 포트에서 시작함. 

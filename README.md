@@ -171,3 +171,23 @@
   server.listen(3000, handleListen); // HTTP 서버를 3000번 포트에서 시작함. 
   ```
   http와 websocket은 같은 port를 공유한다. 웹소켓 서버는 클라이언트와 양방향 통신을 제공하며, HTTP 서버는 Express 앱으로부터 요청을 처리한다.
+
+  #### WebSocket Events
+
+  브라우저에서는 이미 WebSocket API가 내장되어 있으므로, 프론트엔드 개발 단계에서는 별도의 설치가 필요하지 않다. 하지만 백엔드 측에서 다음과 같은 주요 이벤트 핸들러를 사용하여 다양한 연결 상황을 처리할 수 있다: 
+  - 1. `open`, `close` 이벤트: 웹소켓 연결의 열림이나 닫힘 상태를 확인할 때 사용한다. 
+  - 2. `message` 이벤트: 서버로부터 메시지를 수신했을 때 발생한다. 이 이벤트를 통해 서버는 클라이언트로부터 전송된 데이터를 받아 필요한 작업을 수행할 수 있다. 가령 메시지를 분석하거나, 다른 클라이언트에게 메시지를 전달할 수 있다. 
+  - 3. `error` 이벤트: 웹소켓 연결 중에 오류가 발생했을 때 발생한다.'error' 이벤트 핸들러를 등록하여 연결 오류, 통신 오류, 프로토콜 오류 등 다양한 오류 상황을 감지하고 처리할 수 있다. 필요한 경우 오류를 기록하거나 클라이언트에게 오류 메시지를 전달할 수 있다.
+  - 4. `connection` 이벤트: 백엔드에서 클라이언트와의 웹소켓 연결이 확립되었음을 알 수 있다. 클라이언트가 WebSocket 서버에 연결하면 'connection' 이벤트가 트리거된다.
+
+  예를 들어 WebSocket을 이용해서 새로운 Connection을 기다리는 기능을 구현해 보자. 
+  server.js에 추가한 다음 코드는 wss(WebSocket 서버) 객체에 'connection' 이벤트가 발생했을 때 실행될 'handleConnection' 함수를 등록하는 예시이다.
+  ```JavaScript
+  function handleConnection(socket){
+  console.log(socket); // handleConnection 함수는 WebSocket와의 연결이 확립될 때 호출되고, 해당 함수는 socket(WebSocket객체)를 콘솔창에 출력한다.
+  }
+  wss.on("connection", handleConnection); // on()메서드를 사용해 'connection' 이벤트 리스너를 등록함. connection 이벤트가 발생할 때 'handleConnection' 함수가 실행된다.
+  ```
+  따라서, 위의 코드는 WebSocket 서버가 실행되고 클라이언트와의 연결이 확립되면 handleConnection 함수를 호출하며, 연결된 클라이언트의 WebSocket 소켓 객체가 socket 매개변수로 전달된다. 이를 통해 handleConnection 함수 내에서 해당 클라이언트와의 통신을 처리하거나 추가 작업을 수행할 수 있습니다.
+  
+
