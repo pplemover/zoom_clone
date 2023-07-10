@@ -1,4 +1,13 @@
-## Zoom Clone using NodeJS, WebRTC and Websockets
+# Zoom Clone using NodeJS, WebRTC and Websockets
+
+## **목차**
+
+- [기술들](#**기술들**)
+- [1. Server Setup](#**1._Server_Setup**)
+- [2. Frontend Setup](#**2._Frontend_Setup**)
+- [3. WEBSOCKETS로 실시간 채팅 어플 만들기](#**3._WEBSOCKETS로_실시간_채팅_어플_만들기**)
+
+
 ### **기술들**
 #### (1) Express
 
@@ -20,15 +29,14 @@
 
   <hr>
 
-  ### **Progress**
 
-  #### 1. **Server Setup**
+  ### **1. Server Setup**
 
   zoom 프로젝트 폴더에서 `npm init -y`로 Node.js 프로젝트를 위해 새로운 package.json 파일을 생성한다. package.json은 프로젝트의 설정 정보와 의존성 패키지들을 정의하는 파일이며, `-y` 옵션은 프로젝트 설정을 위한 대화형 인터페이스를 스킵하고 모든 설정에 기본값으로 자동으로 동의하여 바로 package.json을 생성한다.
 
   `npm i nodemon -D` 명령어로 Node.js 프로젝트에서 nodemon 패키지를 설치한다. nodemon 패키지가 설치되고 `package.json` 파일의 'devDependencides' 목록에 해당 패키지가 추가된다. 
 
-  현재 프로젝트 구조는 다음과 같다. 
+  #### 현재 프로젝트 구조
 
   ```bash
   ├── .gitignore
@@ -40,6 +48,8 @@
   ``` 
 
   `nodemon.json`는 nodemon 설정을, `babel.config.json` 파일은 Babel 설정을 포함하는 파일이다. `src/server.js` 파일은 서버 애플리케이션의 진입점 역할을 하는 파일로, 여기에서 서버를 설정하고 실행할 수 있다.
+
+  #### babel 설치
 
   다음으로 babel을 설치한다. `npm i @babel/core @babel/cli @babel/node @babel/preset-env -D`명령어로 npm을 사용하여 Babel 관련 패키지들을 설치한다. 
     
@@ -65,25 +75,24 @@
 
   마지막으로 `npm i express`로 express를, `npm i pug`로 pug를 설치한다.
 
-  src/server.js에서 다음 코드로 express 프레임워크를 사용하여 간단한 웹 서버를가 잘 작동하는지 확인한다.
+  #### 웹 서버 동작 확인 
+  src/server.js에서 다음 코드로 express 프레임워크를 사용하여 간단한 웹 서버가 잘 작동하는지 확인한다.
   ```javascript
-  import express from "express";
-  // Es6의 모듈 시스템을 사용하여 'express' 모듈을 불러오기
+  import express from "express"; // Es6의 모듈 시스템을 사용하여 'express' 모듈을 불러오기
 
-  const app = express();
-  // express 함수를 호출하여 새로운 express 어플리케이션 객체 'app'을 생성
+  const app = express(); // express 함수를 호출하여 새로운 express 어플리케이션 객체 'app'을 생성
 
   console.log('hello!');
 
-  app.listen(3000);
-  // 'app' 객체의 listen 메서드를 호출하여 웹 서버를 시작 (3000번 포트에서 실행) 
+  app.listen(3000); // 'app' 객체의 listen 메서드를 호출하여 웹 서버를 시작 (3000번 포트에서 실행) 
   ```
   콘솔창에`npm run dev` 명령어를 실행하여 웹 서버가 잘 구동되는지 확인한다. (콘솔창에 hello! 확인)
 
-  #### 2. **Frontend Setup**
+  ### **2. Frontend Setup**
 
-  다음으로, Express 애플리케이션의 뷰를 렌더링할 수 있도록 세팅한다. 이를 위한 프로젝트 구조는 다음과 같다. 
+  다음으로, Express 애플리케이션의 뷰를 렌더링할 수 있도록 세팅한다. 
 
+  #### 프로젝트 구조
   ```bash
   ├── .gitignore
   ├── nodemon.json
@@ -132,10 +141,11 @@
   물론 CSS 작업을 추후에 별도로 할 것이지만, 초기 단계에서 아무런 꾸밈 없이 개발하는 것보다는 낫다. 
 
 
-  #### 3. **WEBSOCKETS로 실시간 채팅 어플 만들기**
+  ### **3. WEBSOCKETS로 실시간 채팅 어플 만들기**
 
-  이제부터 WEBSOCKETS로 유사한 실시간 채팅 어플리케이션을 만든다. 익명으로 메시지를 보내고 받을 수 있으며, 사용자가 닉네임을 추가할 수 있도록 할 것이다. 사용자가 채팅방을 만들 수 있으며, 채팅방에 입장 및 퇴장하는 이벤트(예: 'oo님이 입장했습니다')도 추가할 것이다. 마지막으로, 채팅방에 현재 참여 중인 사용자 수를 확인하는 기능도 추가할 것이다.
+  이 프로젝트에서 만들어 볼 실시간 채팅 어플리케이션은 익명으로 메시지를 보내고 받을 수 있으며, 사용자가 닉네임을 추가할 수 있도록 할 것이다. 사용자가 채팅방을 만들 수 있으며, 채팅방에 입장 및 퇴장하는 이벤트(예: 'oo님이 입장했습니다')도 추가할 것이다. 마지막으로, 채팅방에 현재 참여 중인 사용자 수를 확인하는 기능도 추가할 것이다.
 
+  #### WebSocket 프로토콜 개념
   실시간 통신을 가능하게 해주는 것은 WebSocket 프로토콜 덕분이다. HTTP 프로토콜의 가장 큰 특징은 stateless이다. 따라서 real-time으로 request, response가 일어나지 않는다. 반면 WebSocket 프로토콜은 statefull 하기 때문에 HTTP와 다르게 지속적인 연결을 제공하며, 클라이언트와 서버 간 여러 데이터를 양방향으로 전송할 수 있다. HTTP는 클라이언트가 서버에 요청을 보내야만 서버에서 응답을 전송할 수 있다. 반면 WebSocket은 서버가 언제든 클라이언트에게 데이터를 푸쉬(push) 할 수 있으므로 실시간 업데이트가 가능하다. 또한 Websocket은 텍스트 기반인 HTTP 프로토콜과 다르게 이진(Binary) 형식으로 데이터를 주고받기 때문에 이미지, 오디오, 비디오 등과 같은 다양한 데이터 유형을 보다 효율적으로 전송할 수 있게 해준다. 
 
   브라우저가 서버로 WebSocket 요청을 보내면, 서버는 이 요청을 수락하거나 거절한다. 연결이 성립되면, 서버는 클라이언트를 기억하기 때문에 사용자에게 메시지를 보낼 수 있다. 한 번 연결된 후에는 마치 Wi-Fi처럼 계속해서 실시간 연결이 유지된다. 브라우저와 서버 간에는 실시간으로 계속된 연결이 이루어진다. 
@@ -145,6 +155,19 @@
   - `WebSocket.send(data)`: 서버로 메시지를 보낸다.
   - `WebSocket.close([code[, reason]])`: WebSocket 연결을 닫는다.
 
+  #### ws 패키지
   WebSocket 서버를 Node.js로 만들기 위해 ws 패키지를 사용할 예정이다. 터미널에서 `npm i ws` 명령어로 ws를 설치한다. ws 패키지는 WebSocket 프로토콜의 핵심 기능만을 제공하므로 채팅방과 같은 고급 기능을 직접 구현하기는 어렵다. 하지만 ws 패키지를 사용하는 프레임워크가 있는데, 이 프레임워크를 통해 앞으로 만든 모든 기능을 구현할 수 있다. 그전까지는 기본 기능을 테스트하고 WebSocket을 최대한 익히기 위해 ws 패키지만을 사용할 것이다. 
 
-  server.js에서 
+  다음으로, http와 websocket를 동일한 서버 포트에서 동시에 처리하기 위해 server.js 코드를 아래와 같이 수정한다.
+  ```JavaScript
+  ...
+  import WebSocket from 'ws';
+  import http from 'http';
+  ...
+  const server = http.createServer(app); // HTTP 서버 생성 (app은 Express 앱 객체)
+
+  const wss = new WebSocket.Server({server}); // WebSocket.Server 클래스로 웹소켓 서버를 생성하고, 생성자에는 HTTP 서버 객체 server를 전달하여 웹소켓 서버가 HTTP 서버 위에서 동작하도록 함.
+
+  server.listen(3000, handleListen); // HTTP 서버를 3000번 포트에서 시작함. 
+  ```
+  http와 websocket은 같은 port를 공유한다. 웹소켓 서버는 클라이언트와 양방향 통신을 제공하며, HTTP 서버는 Express 앱으로부터 요청을 처리한다.
