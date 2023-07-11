@@ -188,6 +188,45 @@
   }
   wss.on("connection", handleConnection); // on()메서드를 사용해 'connection' 이벤트 리스너를 등록함. connection 이벤트가 발생할 때, 즉 WebSocket과의 연결이 확립될 때 'handleConnection' 함수가 실행된다.
   ```
-  따라서, 위의 코드는 WebSocket 서버가 실행되고 클라이언트와의 연결이 확립되면 handleConnection 함수를 호출하며, 연결된 클라이언트의 WebSocket 소켓 객체가 socket 매개변수로 전달된다. 이를 통해 handleConnection 함수 내에서 해당 클라이언트와의 통신을 처리하거나 추가 작업을 수행할 수 있습니다.
+  따라서, 위의 코드는 WebSocket과 클라이언트와의 연결이 확립될 때 connection 이벤트가 발생하면 handleConnection 함수를 호출한다. 연결된 클라이언트의 WebSocket 소켓 객체가 socket 매개변수로 전달되면서 백엔드의 console에서 이 socket을 볼 수 있을 것이다.
+
+  #### 웹소켓 생성 (프런트엔드 - 백엔드 연결)
+
+  WebSocket 객체를 생성하기 위해서는 현재 웹 페이지의 호스트 주소를 동적으로 가져와야 한다. 프런트엔드(app.js)에서 다음 코드를 작성한다.
+  ```JavaScript
+  const socket = new WebSocket(`ws://${window.location.host}`)
+  ```
+  위 코드는 현재 접속한 클라이언트의 호스트 주소에 대한 WebSocket 연결을 시도한다. app.js에 생성된 socket 객체는 서버로의 연결을 뜻하며, 이를 사용하면 연결 상태 변화에 대한 다양한 이벤트를 처리할 수 있다. 'onopen', 'onclose', 'onmessage', 'onerror' 등의 이벤트 핸들러를 등록하여 연결 상태 및 서버로부터 수신된 데이터에 대한 작업을 수행할 수 있다.
+  - socket 객체의 'send()' 메서드를 사용하여 서버로 데이터를 전송할 수 있다.
+  - socket 객체의 'onmessage' 이벤트 핸들러를 등록하여 서버로부터 수신된 데이터를 처리할 수 있다.
+  - socket 객체의 'close()' 메서드를 사용하여 WebSocket 연결을 종료할 수 있다.
+  
+  반대로, 백엔드에서도 프런트엔드와 실시간으로 소통할 수 있다. server.js 파일의 `socket`은 연결된 브라우저를 뜻한다. handleConnection 함수가 실행되면서 백엔드 터미널에서 이 `socket`을 확인할 수 있다. 
+
+  #### 웹소켓 메시지 주고받기
+
+  ```JavaScript
+  function handleConnection(socket){
+    console.log(socket); 
+  }
+  wss.on("connection", handleConnection); 
+  ```
+  위의 코드를 아래와 같이 리팩토링할 수 있다. 
+  ```JavaScript
+  wss.on("connection", (socket) => {
+    console.log(socket);
+  });
+  ```
   
 
+
+
+
+  ### **4. SOCKETIO**
+
+  이 
+
+
+  ### **5. VIDEO CALL**
+
+    이 

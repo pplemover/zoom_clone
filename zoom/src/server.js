@@ -24,14 +24,18 @@ const server = http.createServer(app);
 // HTTP 서버 생성 (app은 Express 앱 객체)
 
 const wss = new WebSocket.Server({server});
-// WebSocket.Server 클래스로 웹소켓 서버를 생성. 생성자에는 HTTP 서버 객체 server를 전달하여 웹소켓 서버가 HTTP 서버 위에서 동작하도록 함.
+// // WebSocket.Server 클래스로 웹소켓 서버를 생성. 생성자에는 HTTP 서버 객체 server를 전달하여 웹소켓 서버가 HTTP 서버 위에서 동작하도록 함.
 
-function handleConnection(socket){
-  console.log(socket); 
-  // handleConnection 함수는 socket(WebSocket 객체)를 콘솔창에 출력한다.
-}
-wss.on("connection", handleConnection); 
-// WebSocket과의 연결이 확립될 때 handleConnection 함수 호출
+// function handleConnection(socket){
+//   console.log(socket); 
+//   // handleConnection 함수는 socket(WebSocket 객체)를 콘솔창에 출력한다.
+// }
+// wss.on("connection", handleConnection); 
+// // WebSocket과의 연결이 확립될 때 handleConnection 함수 호출
+
+wss.on("connection", (socket) => {
+  console.log(socket);
+});
 
 server.listen(3000, handleListen);
 // HTTP 서버를 3000번 포트에서 시작함. 
