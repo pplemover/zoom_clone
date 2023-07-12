@@ -30,9 +30,11 @@ wss.on("connection", (socket) => {
   console.log("Connected to Browser ✔");
   socket.on("close", () => console.log('Disconnected from Browser ⛔'));
   // close 이벤트 핸들러(클라이언트와의 연결 종료될 때)
-  socket.on("message", (message) => {
+  socket.on("message", (data) => {
+    const message = JSON.parse(data);
     console.log(message);
-  })
+  });
+  // 클라이언트로부터 수신한 메시지를 콘솔에 출력한다.
   socket.send("hello!");
   // send 메서드(클라이언트에게 메시지 전송)
 });

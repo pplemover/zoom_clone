@@ -15,5 +15,5 @@ socket.addEventListener("close", () => {
 });
 
 setTimeout(() => {
-  socket.send("hello from the browser");
+  socket.send(JSON.stringify("hello from the browser" ));
 }, 1000);

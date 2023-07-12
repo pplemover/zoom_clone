@@ -241,7 +241,7 @@
   });
   ``` 
 
-  성공적으로 연결된다면, 크롬 개발자도구의 콘솔창에 `Connected to Server ✔` 를 확인할 수 있다. 또한, 서버에서 `send()` 메서드로 전송한 메시지를 볼 수 있다. 
+  성공적으로 연결된다면, 크롬 개발자도구의 콘솔창에 `Connected to Server ✔` 를 확인할 수 있다. 또한, 서버가 `send()` 메서드로 전송한 메시지를 볼 수 있다. 
   ![메시지확인](./images/readme_messagevent.png)
 
   `data: "hello!"`와 `timeStamp: 2149.2000000476837`를 확인할 수 있다. 이를 활용해 'message' 객체에 담긴 실제 데이터('hello!')를 가져와 출력할 수 있다.
@@ -254,7 +254,7 @@
   실행결과는 아래와 같다.
   ![메시지확인](./images/readme_messagevent2.png)
 
-  서버 연결을 종료한다면 'close' 이벤트 리스너가 실행된다.
+  서버와의 연결이 종료된다면 'close' 이벤트 리스너가 실행된다.
   ![섭종료](./images/readme_terminate.png)
   
   #### 웹소켓 연결상태에서 메시지 주고받기 (from FE to BE)
@@ -262,19 +262,29 @@
   ```JavaScript
   // app.js
   setTimeout(() => {
-    socket.send("hello from the browser");
+    socket.send(JSON.stringify("hello from the browser" ));
   }, 1000);
 
   // server.js
   wss.on("connection", (socket) => {
-    socket.on("message", (message) => {
+    socket.on("message", (data) => {
+      const message = JSON.parse(data);
       console.log(message);
-    })
+    });
   });
   ```
+  클라이언트(`app.js`)에서 1초 후에 'hello from the browser' 라는 메시지를 서버로 전송한다. 서버(`server.js`)에서는 클라이언트로부터 수신한 message를 콘솔에 출력한다. 
+
+  클라이언트에서 보낸 문자열은 서버에서 수신할 때 바이너리 형태로 전달되므로 JSON 형식을 사용하여 데이터를 인코딩하여 전송하고 디코딩해야 함을 주의해야 한다.
+
+  front-end와 back-end가 양방향으로 연결되었다. 성공적인 연결 때는 서버(왼쪽), 클라이언트(오른쪽)에서 성공 메시지를 확인할 수 있다.  
+  ![테스트완료](./images/readme_connecttest.png)
+  #### 화면에 구현하기 
 
 
-
+  #### NickNames
+  
+  
   ### **4. SOCKETIO**
 
   이 
