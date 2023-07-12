@@ -279,11 +279,14 @@
 
   front-end와 back-end가 양방향으로 연결되었다. 성공적인 연결 때는 서버(왼쪽), 클라이언트(오른쪽)에서 성공 메시지를 확인할 수 있다.  
   ![테스트완료](./images/readme_connecttest.png)
+
   #### 화면에 구현하기 
 
+  ul 태그와 form 태그를 HTML에 작성한 다음, `app.js`에서 `document.querySelector`로 찾아준다.
 
   #### NickNames
   
+  user가 닉네임을 지정하도록 만들 것이다.
   
   ### **4. SOCKETIO**
 
