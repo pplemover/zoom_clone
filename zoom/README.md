@@ -210,24 +210,28 @@
   
   반대로, 백엔드에서도 프런트엔드와 실시간으로 소통할 수 있다. server.js 파일의 `socket`은 연결된 브라우저를 뜻한다. handleConnection 함수가 실행되면서 백엔드 터미널에서 이 `socket`을 확인할 수 있다. 
 
-  #### 웹소켓 연결상태에서 메시지 주고받기
+  #### 웹소켓 연결상태에서 메시지 주고받기 (from BE to FE)
   
-  이제 WebSocket 서버와 클라이언트 간의 상호작용을 구현한다. server.js에서 아래 코드는 서버에서 클라이언트와의 연결이 수립되었을 때 `send()` 메서드를 사용하여 클라이언트에게 'hello!' 메시지를 전송한다. 
+  이제 WebSocket 서버와 클라이언트 간의 상호작용을 구현한다. server.js에서 아래 코드는 연결 성공 시 서버가 `send()` 메서드를 사용하여 클라이언트에게 'hello!' 메시지를 전송하는 부분이다. 
   ```JavaScript
+  // server.js
   wss.on("connection", (socket) => {
-    console.log("Connected to Browser ✔");
-    socket.send("hello!");
+    console.log("Connected to Browser ✔"); // 연결 성공
+    socket.on("close", () => console.log('Disconnected from Browser ⛔')); // 브라우저와 연결 종료
+    socket.send("hello!"); // 클라이언트에게 메시지 전송
   });
   ```
 
-  app.js에서 아래 코드는 WebSocket 클라이언트에서 서버와의 연결이 성공적으로 수립되었을 때 확인 메시지를 콘솔에 출력한다. 
+  app.js에서 아래 코드는 연결 성공 시 프런트엔드 단에서 확인 메시지를 콘솔에 출력하는 부분이다. 
   ```JavaScript
+  // app.js
   socket.addEventListener("open", () => {
     console.log("Connected to Server ✔")
   });
   ```
-  메시지를 받을 때마다, 연결이 끊어졌을 때 출력할 때 어떻게 할 것인지도 정의해준다.
+  메시지를 받을 때마다, 혹은 연결이 끊어졌을 때 실행될 이벤트 리스너도 추가해준다.
   ```JavaScript
+  // app.js
   socket.addEventListener("message", (message) => {
     console.log("You got this: ", message, "from the server");
   });
@@ -237,8 +241,37 @@
   });
   ``` 
 
-  
+  성공적으로 연결된다면, 크롬 개발자도구의 콘솔창에 `Connected to Server ✔` 를 확인할 수 있다. 또한, 서버에서 `send()` 메서드로 전송한 메시지를 볼 수 있다. 
+  ![메시지확인](./images/readme_messagevent.png)
 
+  `data: "hello!"`와 `timeStamp: 2149.2000000476837`를 확인할 수 있다. 이를 활용해 'message' 객체에 담긴 실제 데이터('hello!')를 가져와 출력할 수 있다.
+  ```JavaScript
+  // app.js
+  socket.addEventListener("message", (message) => {
+    console.log("You got this: ", message.data, "from the server at", message.timeStamp,);
+  });
+  ```
+  실행결과는 아래와 같다.
+  ![메시지확인](./images/readme_messagevent2.png)
+
+  서버 연결을 종료한다면 'close' 이벤트 리스너가 실행된다.
+  ![섭종료](./images/readme_terminate.png)
+  
+  #### 웹소켓 연결상태에서 메시지 주고받기 (from FE to BE)
+  
+  ```JavaScript
+  // app.js
+  setTimeout(() => {
+    socket.send("hello from the browser");
+  }, 1000);
+
+  // server.js
+  wss.on("connection", (socket) => {
+    socket.on("message", (message) => {
+      console.log(message);
+    })
+  });
+  ```
 
 
 

@@ -28,7 +28,13 @@ const wss = new WebSocket.Server({server});
 
 wss.on("connection", (socket) => {
   console.log("Connected to Browser ✔");
+  socket.on("close", () => console.log('Disconnected from Browser ⛔'));
+  // close 이벤트 핸들러(클라이언트와의 연결 종료될 때)
+  socket.on("message", (message) => {
+    console.log(message);
+  })
   socket.send("hello!");
+  // send 메서드(클라이언트에게 메시지 전송)
 });
 
 server.listen(3000, handleListen);
