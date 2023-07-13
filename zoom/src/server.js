@@ -22,7 +22,6 @@ const handleListen = () => console.log('Listening on http://localhost:3000');
 
 const server = http.createServer(app);
 // HTTP 서버 생성 (app은 Express 앱 객체)
-
 const wss = new WebSocket.Server({server});
 // // WebSocket.Server 클래스로 웹소켓 서버를 생성. 
 
@@ -33,6 +32,7 @@ wss.on("connection", (socket) => {
   socket.on("message", (data) => {
     const message = JSON.parse(data);
     console.log(message);
+    socket.send(message)
   });
   // 클라이언트로부터 수신한 메시지를 콘솔에 출력한다.
   socket.send("hello!");

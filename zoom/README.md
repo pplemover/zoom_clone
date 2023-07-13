@@ -1,4 +1,5 @@
 # Zoom Clone using NodeJS, WebRTC and Websockets
+### from NomadCoders Zoom Clone Coding
 
 ## **목차**
 
@@ -282,21 +283,41 @@
 
   #### 화면에 구현하기 
 
-  ul 태그와 form 태그를 HTML에 작성한 다음, `app.js`에서 `document.querySelector`로 찾아준다. 
+  폼(form)의 제출(submit) 이벤트가 발생했을 때 form에 적은 메시지를 콘솔창에 출력해보자. 먼저 form 태그를 `app.js`에서 `document.querySelector`로 찾아준다. 
   ```JavaScript
   // app.js
+  const messageForm = document.querySelector("form");
+
   function handleSubmit(event){
-    event.preventDefault();
-    const input = messageForm.querySelector("input");
-    console.log(input.value);
+    event.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
+    const input = messageForm.querySelector("input"); // input 태그를 찾아서,
+    console.log(input.value); // input 요소의 값(value)을 콘솔에 출력.
   };
 
-messageForm.addEventListener("submit", handleSubmit);
+  messageForm.addEventListener("submit", handleSubmit); // 폼이 제출될 때 handleSubmit 함수가 호출됨
   ```
+  ![폼테스트완료](./images/readme_formtest.png)
+  폼에 hello 라고 입력하면, 콘솔창에 hello를 확인할 수 있다. 정상 동작함을 확인하였으므로, 이제 콘솔창이 아닌 서버에 전송하기 위해 아래와 같이 코드를 수정한다. 
+
+  ```JavaScript
+  function handleSubmit(event){
+    event.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
+    const input = messageForm.querySelector("input"); // input 태그를 찾아서,
+    socket.send(JSON.stringify(input.value));  // WebSocket을 통해 'value' 값을 서버로 전송
+    input.value = ""; // 사용자가 메시지를 전송한 후에 입력 필드를 비움
+  };
+  ```
+  폼에 입력한 데이터는 백엔드로 넘어간다. 클라이언트 측에서 메시지를 서버로 전송할 때 객체를 string으로 변환해서 사용해야 한다는 점을 주의한다.
+  
+
 
   #### NickNames
   
-  user가 닉네임을 지정하도록 만들 것이다.
+  닉네임을 사용자에게 입력 받아서 저장함으로써 각 사용자를 구분하고 싶다.
+
+  현재까지 클라이언트 측에서 메시지를 서버를 전송할 때 객체를 string으로 변환해서 사용하고, 
+
+  하지만 이런 복잡한 과정을 조금 더 쉽고, 수월하게 해주는 프레임워크가 `SocketIO`이다.
   
   ### **4. SOCKETIO**
 
