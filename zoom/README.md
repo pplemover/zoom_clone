@@ -282,7 +282,17 @@
 
   #### 화면에 구현하기 
 
-  ul 태그와 form 태그를 HTML에 작성한 다음, `app.js`에서 `document.querySelector`로 찾아준다.
+  ul 태그와 form 태그를 HTML에 작성한 다음, `app.js`에서 `document.querySelector`로 찾아준다. 
+  ```JavaScript
+  // app.js
+  function handleSubmit(event){
+    event.preventDefault();
+    const input = messageForm.querySelector("input");
+    console.log(input.value);
+  };
+
+messageForm.addEventListener("submit", handleSubmit);
+  ```
 
   #### NickNames
   
