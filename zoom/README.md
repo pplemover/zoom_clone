@@ -281,9 +281,9 @@
   front-end와 back-end가 양방향으로 연결되었다. 성공적인 연결 때는 서버(왼쪽), 클라이언트(오른쪽)에서 성공 메시지를 확인할 수 있다.  
   ![테스트완료](./images/readme_connecttest.png)
 
-  #### 화면에 구현하기 
+  #### 웹소켓 연결상태에서 메시지 주고받기 (from BE to FE)
 
-  폼(form)의 제출(submit) 이벤트가 발생했을 때 form에 적은 메시지를 콘솔창에 출력해보자. 먼저 form 태그를 `app.js`에서 `document.querySelector`로 찾아준다. 
+  (1) FE에서 메시지 입력할 폼 만들어주기 - 폼(form)의 제출(submit) 이벤트가 발생했을 때 form에 적은 메시지를 콘솔창에 출력해보자. 먼저 form 태그를 `app.js`에서 `document.querySelector`로 찾아준다. 
   ```JavaScript
   // app.js
   const messageForm = document.querySelector("form");
@@ -299,7 +299,9 @@
   ![폼테스트완료](./images/readme_formtest.png)
   폼에 hello 라고 입력하면, 콘솔창에 hello를 확인할 수 있다. 정상 동작함을 확인하였으므로, 이제 콘솔창이 아닌 서버에 전송하기 위해 아래와 같이 코드를 수정한다. 
 
+  (2) FE 입력 폼에서 적은 메시지를 BE로 보내기 
   ```JavaScript
+  // app.js
   function handleSubmit(event){
     event.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
     const input = messageForm.querySelector("input"); // input 태그를 찾아서,
@@ -307,8 +309,36 @@
     input.value = ""; // 사용자가 메시지를 전송한 후에 입력 필드를 비움
   };
   ```
-  폼에 입력한 데이터는 백엔드로 넘어간다. 클라이언트 측에서 메시지를 서버로 전송할 때 객체를 string으로 변환해서 사용해야 한다는 점을 주의한다.
-  
+  폼에 입력한 데이터는 백엔드로 넘어간다. 클라이언트 측에서 메시지를 서버로 전송할 때 객체를 string으로 변환해서 사용해야 한다는 점을 주의한다. 
+
+  (3) BE에서 보낸 메시지를 FE로 보내기 
+
+  ```JavaScript
+  wss.on("connection", (socket) => {
+    ...
+    socket.on("message", (data) => {
+      const message = JSON.parse(data); 
+      // 클라이언트로부터 받은 데이터는 message에 담김
+      ...
+      socket.send(message); 
+      // 클라이언트로부터 수신한 메시지를 클라이언트로 다시 보낸다.
+    });
+  });
+  ```
+  그렇다면 FE에서는 메시지가 어떻게 보일까? 아래는 app.js에서 프런트 단이 소켓이 메시지를 받으면 콘솔에 message.data를 출력하는 것에 대해 정의한 것이다.
+  ```JavaScript
+  // app.js
+  socket.addEventListener("message", (message) => {
+    console.log("You got this: ", message.data, "from the server at", message.timeStamp,);
+  });
+  ```
+  따라서 크롬 브라우저의 콘솔창에 `You got this: ~` 형태의 메시지를 확인할 수 있다.
+
+  #### 연결된 사용자(클라이언트) 정보를 서버에 저장하기
+
+  하나의 탭(클라이언트)은 각자 서버와 연결을 맺게 된다. 만약 서로 다른 브라우저에서 localhost:3000에 동시에 접속하고, 둘 중 하나의 폼에 메시지를 입력하고 서버에 전송한다면? 메시지를 전송한 탭의 콘솔에서만 메시지가 출력된다. 
+
+  하지만 실제로 채팅방을 구현하기 위해서는 몇 명의 사용자가 사버에 접속해 있는지 확인하고, 사용자 간에 메시지를 주고받을 수 있는 형태로 실시간 연결을 구현해야 한다.
 
 
   #### NickNames
