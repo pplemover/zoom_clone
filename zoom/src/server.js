@@ -25,14 +25,16 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 // // WebSocket.Server 클래스로 웹소켓 서버를 생성. 
 
+const sockets = [];
+
 wss.on("connection", (socket) => {
+  sockets.push(socket);
   console.log("Connected to Browser ✔");
   socket.on("close", () => console.log('Disconnected from Browser ⛔'));
   // close 이벤트 핸들러(클라이언트와의 연결 종료될 때)
   socket.on("message", (data) => {
-    const message = JSON.parse(data);
-    console.log(message);  // 클라이언트로부터 수신한 메시지를 콘솔에 출력한다.
-    socket.send(message);  // 클라이언트로부터 수신한 메시지를 클라이언트에 보낸다.
+    const message = JSON.parse(data); // JSON 형식으로 파싱하여 'message' 변수에 저장함.
+    sockets.forEach((aSocket) => aSocket.send(message)); // 각 소켓(aSocket), 즉 연결된 클라이언트에게 message를 보낸다. 
   });
 });
 
