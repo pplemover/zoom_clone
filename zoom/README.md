@@ -349,14 +349,16 @@
   wss.on("connection", (socket) => { 
     sockets.push(socket); // 소켓이 sockets 배열에 추가된다.
     ...
-    socket.on("message", (data) => { // 수신된 data를 
+    socket.on("message", (data) => { // 수신된 data를,
       const message = JSON.parse(data); // JSON 형식으로 파싱하여 'message' 변수에 저장함.
       sockets.forEach((aSocket) => aSocket.send(message)); // 각 소켓(aSocket), 즉 연결된 클라이언트에게 message를 보낸다. 
     });
   });
 
   ```
-  콜백 함수는 연결된 각 클라이언트 소켓에 대해 실행되므로, 연결된 모든 클라이언트 정보가 `sockets`에 저장된다. 이제 클라이언트로부터 수신된 메시지를 서버에 연결된 모든 클라이언트에게 다시 보낼 수 있다.
+  콜백 함수는 연결된 각 클라이언트 소켓에 대해 실행되므로, 연결된 모든 클라이언트 정보가 `sockets`에 저장된다. 이제 하나의 클라이언트가 전송한 메시지를 서버와 연결된 모든 클라이언트에게 보낼 수 있게 된다.
+
+  새롭게 받은 메시지는 li 태그에 넣을 것이다.
 
 
   #### NickNames
