@@ -213,7 +213,7 @@
 
   #### 웹소켓 연결상태에서 메시지 주고받기 (from BE to FE)
   
-  이제 WebSocket 서버와 클라이언트 간의 상호작용을 구현한다. server.js에서 아래 코드는 연결 성공 시 서버가 `send()` 메서드를 사용하여 클라이언트에게 'hello!' 메시지를 전송하는 부분이다. 
+  이제 WebSocket 서버와 클라이언트 간의 상호작용을 구현한다. 아래 코드는 연결 성공 시 서버가 `send()` 메서드를 사용하여 클라이언트에게 'hello!' 메시지를 전송하는 부분이다. 
   ```JavaScript
   // server.js
   wss.on("connection", (socket) => {
@@ -439,10 +439,15 @@
   
   ### **4. SOCKETIO**
 
-  `npm i socket.io` 로 socket.io 패키지를 설치한다. SocketIO란 실시간(real-time), 양방향(bidirectional), 이벤트에 기반한 소통을 가능하게 해주는 프레임워크이다. 어떤 플랫폼, 브라우저, 디바이스에 상관없이 사용 가능하다. 
+  지금까지 다룬 `웹 소켓(WSS)`는 웹 소켓 규격에 맞춰 protocol을 실행시킨 것에 불과하다. 아직 완벽한 채팅 앱으로서는 부족하며 몇 가지 개선이 필요하다. 가령 여러 명이 참가한 방에서 socket 하나가 연결이 끊어지면 이를 자동으로 처리하거나, 연결된 모든 소켓들을 실시간으로 확인하고 업데이트하는 기능이 필요하다. 
+
+  SocketIO란 실시간(real-time), 양방향(bidirectional), 이벤트에 기반하여 프런트엔드와 백엔드 간 소통을 가능하게 해주는 프레임워크이다. 어떤 플랫폼, 브라우저, 디바이스에 상관없이 사용 가능하다. Socket.IO는 `웹 소켓`을 지원하며, 만약 웹 소켓 사용이 불가능한 경 우에도 다른 전송 수단을 사용해서 실시간 연결을 지원한다는 점이 가장 큰 장점이자 특징이다.
 
   #### socketIO 서버 만들기
 
+  먼저 `npm`을 사용하여 Socket.IO를 설치한다.
+  > `npm i socket.io` 
+  
   ```JavaScript
   // server.js
   import SocketIO from "socket.io";
