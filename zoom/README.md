@@ -358,12 +358,42 @@
   ```
   콜백 함수는 연결된 각 클라이언트 소켓에 대해 실행되므로, 연결된 모든 클라이언트 정보가 `sockets`에 저장된다. 이제 하나의 클라이언트가 전송한 메시지를 서버와 연결된 모든 클라이언트에게 보낼 수 있게 된다.
 
-  새롭게 받은 메시지는 li 태그에 넣을 것이다.
+  클라이언트가 새로운 메시지를 받으면 (message 이벤트) 새로운 li 태그를 생성하여 ul 태그에 넣을 것이다.
+  ```JavaScript
+  // app.js
+  socket.addEventListener("message", (message) => {
+    const li = document.createElement("li"); // 새로운 리스트 아이템 요소를 생성하여 li 변수에 할당 
+    li.innerText = message.data; // 메시지의 데이터를 li 요소의 내용으로 설정
+    messageList.append(li); // messageList(ul 요소)에 li 요소를 append
+  });
+  ``` 
+  이제 아래 이미지와 같이 메시지를 화면에서 확인할 수 있다.
+  ![테스트완료](./images/readme_messageonscreen.png)
 
 
   #### NickNames
   
-  닉네임을 사용자에게 입력 받아서 저장함으로써 각 사용자를 구분하고 싶다.
+  이제 사용자가 선호하는 nickname(별명)을 직접 입력 받아서 채팅에서 누가 말을 했는지 구분하려 한다. 이를 위해 닉네임을 입력 받는 폼을 만들 것이다. 그러나 닉네임이 앞서 작성했던 메시지 이벤트 핸들러에 의해 처리되지 않도록 폼을 JSON 객체 형식으로 변환하고, 'type' 속성을 추가해 일반적인 메시지와 구분할 것이다.
+
+  ```JavaScript
+  // 사용자가 닉네임을 폼에 입력한 뒤 제출할 때 실행되는 함수
+  function onSubmitNickname() {
+    const nickname = document.getElementById("nicknameInput").value;
+
+    // JSON 객체 형식으로 변환하여 서버로 전송
+    const message = {
+      type: "nickname",
+      nickname: nickname,
+    };
+
+    // 서버로 메시지 전송 코드 추가
+    // ...
+  }
+  ```
+  서버는 이제 전달된 JSON 객체를 받아서 'type' 속성을 확인하여 메시지의 유형을 구분할 수 있다. `new_message` 타입의 메시지인 경우 모든 소켓에 해당 메시지를 전송하고, `nickname` 타입의 메시지인 경우 해당 소켓의 닉네임 값을 저장하여 채팅에서 누가 말했는지를 표시할 수 있다.
+
+
+
 
   현재까지 클라이언트 측에서 메시지를 서버를 전송할 때 객체를 string으로 변환해서 사용하고, 
 

@@ -10,7 +10,9 @@ socket.addEventListener("open", () => {
 
 // 서버로부터 직접 받은 메시지 출력 
 socket.addEventListener("message", (message) => {
-  console.log("You got this: ", message.data, "from the server at", message.timeStamp,);
+  const li = document.createElement("li"); // 새로운 리스트 아이템 요소를 생성하여 li 변수에 할당 
+  li.innerText = message.data; // 메시지의 데이터를 li 요소의 내용으로 설정
+  messageList.append(li); // messageList(ul 요소)에 li 요소를 append
 });
 
 // 서버 연결 종료 메시지
@@ -19,9 +21,9 @@ socket.addEventListener("close", () => {
 });
 
 // 서버에 10초 뒤에 메시지 보내기
-setTimeout(() => {
-  socket.send(JSON.stringify("연결 10초 경과" ));
-}, 10000);
+// setTimeout(() => {
+//   socket.send(JSON.stringify("연결 10초 경과" ));
+// }, 10000);
 
 // 화면에 메시지 띄우기
 function handleSubmit(event){
