@@ -376,21 +376,13 @@
   이제 사용자가 선호하는 nickname(별명)을 직접 입력 받아서 채팅에서 누가 말을 했는지 구분하려 한다. 이를 위해 닉네임을 입력 받는 폼을 만들 것이다. 그러나 닉네임이 앞서 작성했던 메시지 이벤트 핸들러에 의해 처리되지 않도록 폼을 JSON 객체 형식으로 변환하고, 'type' 속성을 추가해 일반적인 메시지와 구분할 것이다.
 
   ```JavaScript
-  // 사용자가 닉네임을 폼에 입력한 뒤 제출할 때 실행되는 함수
-  function onSubmitNickname() {
-    const nickname = document.getElementById("nicknameInput").value;
-
-    // JSON 객체 형식으로 변환하여 서버로 전송
-    const message = {
-      type: "nickname",
-      nickname: nickname,
-    };
-
-    // 서버로 메시지 전송 코드 추가
-    // ...
-  }
+  // app.js
+  function makeMessage(type, payload){
+    const msg = {type, payload};
+    return JSON.stringify(msg);
+  } 
   ```
-  서버는 이제 전달된 JSON 객체를 받아서 'type' 속성을 확인하여 메시지의 유형을 구분할 수 있다. `new_message` 타입의 메시지인 경우 모든 소켓에 해당 메시지를 전송하고, `nickname` 타입의 메시지인 경우 해당 소켓의 닉네임 값을 저장하여 채팅에서 누가 말했는지를 표시할 수 있다.
+  위 함수는 주어진 'type(메시지 유형)'과 'payload(메시지 내용)' 값을 사용하여 JSON 형식의 메시지를 만들고 문자열로 변환하여 반환하는 역할을 수행한다. 사용자가 메시지를 폼에 입력한 뒤 제출할 때 
 
 
 
@@ -401,7 +393,19 @@
   
   ### **4. SOCKETIO**
 
-  이 
+  `npm i socket.io` 로 socket.io 패키지를 설치한다. SocketIO란 실시간(real-time), 양방향(bidirectional), 이벤트에 기반한 소통을 가능하게 해주는 프레임워크이다. 어떤 플랫폼, 브라우저, 디바이스에 상관없이 사용 가능하다. 
+
+  #### socketIO 서버 만들기
+
+  ```JavaScript
+  // server.js
+  import SocketIO from "socket.io";
+
+  const server = http.createServer(app);
+  const io = SocketIO(server);
+  ```
+
+  socketIO를 생성하면, localhost:3000/socket.io/socket.io.js 라는 url 이 자동으로 생성된다. 
 
 
   ### **5. VIDEO CALL**
