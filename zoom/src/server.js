@@ -29,12 +29,20 @@ const sockets = [];
 
 wss.on("connection", (socket) => {
   sockets.push(socket);
+  socket["nickname"] = "Anonymous"
   console.log("Connected to Browser ✔");
   socket.on("close", () => console.log('Disconnected from Browser ⛔'));
   // close 이벤트 핸들러(클라이언트와의 연결 종료될 때)
-  socket.on("message", (data) => {
-    const message = JSON.parse(data); // JSON 형식으로 파싱하여 'message' 변수에 저장함.
-    sockets.forEach((aSocket) => aSocket.send(message)); // 각 소켓(aSocket), 즉 연결된 클라이언트에게 message를 보낸다. 
+  socket.on("message", (msg) => {
+    const parsed = JSON.parse(msg); // JSON 형식으로 파싱
+    switch(parsed.type){
+      case "new_message":
+        sockets.forEach((aSocket) => 
+          aSocket.send(`${socket.nickname}: ${parsed.payload}`)
+        );
+      case "nickname":
+        socket["nickname"] = parsed.payload;
+    }
   });
 });
 

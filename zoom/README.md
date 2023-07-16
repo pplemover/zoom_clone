@@ -378,18 +378,64 @@
   ```JavaScript
   // app.js
   function makeMessage(type, payload){
-    const msg = {type, payload};
-    return JSON.stringify(msg);
+    const msg = {type, payload}; // JSON 객체 msg 생성
+    return JSON.stringify(msg); // msg를 문자열로 변환
   } 
   ```
-  위 함수는 주어진 'type(메시지 유형)'과 'payload(메시지 내용)' 값을 사용하여 JSON 형식의 메시지를 만들고 문자열로 변환하여 반환하는 역할을 수행한다. 사용자가 메시지를 폼에 입력한 뒤 제출할 때 
+  위 함수는 주어진 'type(메시지 유형)'과 'payload(메시지 내용)' 값을 사용하여 JSON 형식의 메시지를 만들고 문자열로 변환하여 반환하는 역할을 수행한다.
+
+  ```JavaScript
+  function handleNickSubmit(event){
+    ...
+    socket.send(makeMessage("nickname", input.value));
+    ...
+  };
+  ``` 
+  즉, 위와 같이 사용자가 메시지를 폼에 입력하고 제출하는 과정에서 makeMessage 함수를 사용하여 메시지 유형과 메시지 내용을 JSON 형태로 생성하여 서버로 전송할 수 있다. 
+
+  이제 서버에서 2개의 메시지 유형(new_message, nickname)에 대해 각각 어떻게 처리해야 하는지를 정의하여야 한다.
+  ```JavaScript
+  wss.on("connection", (socket) => {
+    ...
+    socket.on("message", (message) => {
+      const parsed = JSON.parse(message); // JSON 형식으로 파싱
+      if (parsed.type === "new_message"){ // 파싱된 메시지의 타입이 new_message일 경우,
+        sockets.forEach((aSocket) => aSocket.send(parsed.payload)); 
+        // 연결된 모든 소켓(클라이언트)에게 메시지를 보낸다. 
+      } else if (parsed.type === "nickname"){ // 파싱된 메시지의 타입이 nickname인 경우
+        console.log(parsed.payload); // 닉네임 정보를 콘솔창에 출력함.
+      }
+    });
+  });
+  ```
+  위의 코드는 클라이언트가 서버에 보낸 메시지를 파싱하여 'new_message'인 경우에는 모든 클라이언트에게, 'nickname'인 경우에는 그 정보를 socket에 저장한다.
+
+  동일한 코드를 아래와 같이 리팩토링할 수 있다. (메시지의 타입을 처리할 때 if else 문 대신 switch 문을 사용)
+  ```JavaScript
+  wss.on("connection", (socket) => {
+    ...
+    socket.on("message", (msg) => {
+      const parsed = JSON.parse(msg); // JSON 형식으로 파싱
+      switch(parsed.type){
+        case "new_message":
+          sockets.forEach((aSocket) => 
+            aSocket.send(`${socket.nickname}: ${parsed.payload}`)
+          );
+        case "nickname":
+          socket["nickname"] = parsed.payload;
+      }
+    });
+  });
+  ```
+
+  위 코드에 `socket["nickname"] = "Anonymous"`을 추가해준다. 기본 값으로 'Anonymous(익명)'을 설정함으로써 클라이언트가 닉네임을 지정하지 않은 경우 기본 값으로 'Anonymous' 를 사용하게 된다. 
 
 
+  #### `나를 제외한` 다른 모두에게 메시지를 전송하기 
 
+  이로써 Nickname이 있는 채팅방을 만들었다. 현재까지 클라이언트 측에서 메시지를 서버를 전송할 때 객체를 string으로 변환해서 사용하고, 
 
-  현재까지 클라이언트 측에서 메시지를 서버를 전송할 때 객체를 string으로 변환해서 사용하고, 
-
-  하지만 이런 복잡한 과정을 조금 더 쉽고, 수월하게 해주는 프레임워크가 `SocketIO`이다.
+  하지만 websocket의 복잡한 과정을 조금 더 쉽게 해주는 프레임워크가 있는데, 그것이 바로 `SocketIO`이다.
   
   ### **4. SOCKETIO**
 
@@ -405,7 +451,7 @@
   const io = SocketIO(server);
   ```
 
-  socketIO를 생성하면, localhost:3000/socket.io/socket.io.js 라는 url 이 자동으로 생성된다. 
+  socketIO를 생성하면, `localhost:3000/socket.io/socket.io.js` 라는 url 이 자동으로 생성된다. 
 
 
   ### **5. VIDEO CALL**
