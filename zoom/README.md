@@ -471,26 +471,42 @@
   script(src="/socket.io/socket.io.js")
   ```
 
-  아래는 백엔드에서 클라이언트가 소켓 연결을 시도할 때 발생하는 이벤트를 처리하는 코드이다. 
+  #### BE to FE
+
+  일반적으로 서버 측에서는 여러 클라이언트와의 소켓 연결을 관리해야 한다. 아래 코드는 새로운 클라이언트가 서버에 접속하면 connection 이벤트 핸들러가 실행되며, 해당 클라이언트와 연결된 소켓 객체를 'socket' 매개변수를 통해 전달하는 코드이다.
 
   ```JavaScript
   // server.js
   io.on("connection", socket => { // 클라이언트가 서버에 접속하면 connection 이벤트 발생 
-    console.log(socket); //
+    console.log(socket); 
   });
   ``` 
-  `socket`은 클라이언트와 연결된 소켓 객체이며, 각 클라이언트마다 하나의 소켓이 생성된다.
+  `socket`은 클라이언트와 연결된 소켓 객체를 의미하며, 각 클라이언트마다 하나의 소켓이 생성된다.
 
+  #### FE to BE
+
+  아래 코드는 프런트엔드에서 백엔드로의 연결을 도와준다. 
   ```JavaScript
+  // app.js
   const socket = io();
   ```
-  위 코드는 프런트엔드에서 백엔드로의 연결을 도와준다.
-
-  io function은 알아서 socket.io를 실행하고 있는 서버를 찾을 것이다. 우리는 지금 연결된 모든 socket을 자동적으로 추적하고 있다. 
+  `io` 함수는 자체적으로 socket.io를 실행하고 있는 서버를 찾아서 연결을 도와주는 역할을 한다. 
 
   ![테스트완료](./images/readme_socketioconsole.png)
 
-  전에는 sockets.push(socket)을 써야 했다. 이제는 정말 쉽게 sockets에서 socket id를 볼 수 있다.
+
+  #### io 객체가 제공하는 주요 기능과 속성
+
+  (1) io.on(event, callback): 클라이언트와 서버 간의 통신 이벤트를 처리하는 핸들러를 등록하는 메서드입니다. event는 이벤트 이름을 의미하며, 클라이언트 측에서 해당 이벤트를 발생시키면 callback 함수가 실행됩니다.
+
+  (2) io.emit(event, data): 서버에서 모든 클라이언트에게 특정 이벤트를 보내는 메서드입니다. data는 이벤트와 함께 전달할 데이터를 의미합니다.
+
+  (3) io.sockets: 연결된 모든 소켓을 관리하는 Namespace 객체입니다. io.sockets.sockets는 연결된 모든 소켓을 담고 있는 Map 형태의 객체입니다.
+
+  (4) io.to(roomName).emit(event, data): 특정 방(room)에 속한 클라이언트들에게 이벤트를 보내는 메서드입니다.
+
+  (5) io.of(namespace): 특정 네임스페이스를 가진 Namespace 객체를 반환하는 메서드입니다. 기본적으로는 / 네임스페이스가 사용되며, 이를 통해 다중 네임스페이스를 지원합니다.
+
 
 
 
