@@ -20,6 +20,10 @@ app.get("*", (req, res) => res.redirect("/"));
 const server = http.createServer(app);
 const io = SocketIO(server);
 
+io.on("connection", socket => {
+  console.log(socket);
+});
+
 // const server = http.createServer(app);
 // HTTP 서버 생성 (app은 Express 앱 객체)
 // const wss = new WebSocket.Server({server});

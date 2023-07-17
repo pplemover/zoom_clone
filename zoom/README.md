@@ -453,13 +453,27 @@
   ```
   WebSocket 서버를 만드는 방법을 상기해보자. HTTP 서버를 생성하고, 새로운 WebSocket을 HTTP 위에 쌓아 올렸다. 클라이언트는 HTTP를 통해 서버와 처음에 연결하고, 그 후에 WebSocket 연결을 통해 실시간 통신을 할 수 있게 된다. 반면에, Socket.IO를 사용하여 WebSocket 서버를 구축하는 것은 좀 더 추상화된 방법으로, 여러 개의 전송 방식을 사용하여 실시간 양방향 통신을 지원하는 프레임워크를 구축한다. 
 
-  `const server = http.createServer(app);` 는 Express 애플리케이션 app을 기반으로 HTTP 서버를 생성하는 부분이다. 생성된 HTTP 서버 객체가 server 변수에 저장된다.
+  `const server = http.createServer(app);` 는 Express 애플리케이션 app을 기반으로 HTTP 서버 객체를 생성하여 server 변수에 저장하는 부분이다.
 
-  `const io = SocketIO(server);` 는 Socket.IO 모듈을 사용하여 WebSocket 서버를 생성하는 부분이다. SocketIO(server)는 이전에 생성한 HTTP 서버 server를 기반으로 Socket.IO 서버를 생성한다. 생성된 Socket.IO 서버 객체가 io 변수에 저장된다.
+  `const io = SocketIO(server);` 는 Socket.IO 모듈을 사용하여 WebSocket 서버를 생성하는 부분이다. SocketIO(server)는 이전에 생성한 HTTP 서버 server를 기반으로 Socket.IO 서버를 생성한다
 
-  즉, 위 코드는 Express 애플리케이션과 Socket.IO를 사용하여 동시에 HTTP 서버와 WebSocket 서버를 생성하고, 이 두 서버가 같은 포트를 공유하도록 설정하는 부분입니다. 이렇게 함으로써 클라이언트는 HTTP를 통해 서버와 연결한 뒤 WebSocket 연결을 통해 실시간 통신을 할 수 있습니다. Socket.IO는 WebSocket을 기본적으로 지원하면서도 다양한 브라우저와 환경에서 실시간 통신을 보다 호환성 있게 처리할 수 있도록 도와줍니다.
+  즉, 동시에 HTTP 서버와 WebSocket 서버를 생성하여 이 두 서버가 같은 포트를 공유하도록 설정한다. 이렇게 하면 클라이언트는 HTTP를 통해 서버와 연결한 뒤 WebSocket 연결을 통해 실시간 통신을 할 수 있다.
 
-  socketIO를 생성하면, `localhost:3000/socket.io/socket.io.js` 라는 url 이 자동으로 생성된다. 
+  ```JavaScript
+  server.listen(3000, handleListen);
+  // HTTP 서버를 3000번 포트에서 시작함. 
+  ```
+
+  socket.io를 서버 단에 설치했다면, 클라이언트 측 브라우저에서도 socket.io를 설치해야 한다. socket.io 라이브러리를 제공하는 CDN 서버에서 파일을 직접 불러올 수 있다. 아래처럼 HTML 파일에 스크립트를 추가한다.
+  
+  ```HTML
+  <!--home.pug-->
+  script(src="/socket.io/socket.io.js")
+  ```
+
+  backend에서 connection을 받을 준비를 한다. 
+
+
 
 
   ### **5. VIDEO CALL**
