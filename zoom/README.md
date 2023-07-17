@@ -413,7 +413,10 @@
   동일한 코드를 아래와 같이 리팩토링할 수 있다. (메시지의 타입을 처리할 때 if else 문 대신 switch 문을 사용)
   ```JavaScript
   wss.on("connection", (socket) => {
-    ...
+    sockets.push(socket);
+    socket["nickname"] = "Anonymous"
+    console.log("Connected to Browser ✔");
+    socket.on("close", () => console.log('Disconnected from Browser ⛔'));
     socket.on("message", (msg) => {
       const parsed = JSON.parse(msg); // JSON 형식으로 파싱
       switch(parsed.type){
@@ -427,21 +430,14 @@
     });
   });
   ```
+  위 코드에서 `socket["nickname"] = "Anonymous"` 부분은 클라이언트의 닉네임의 기본 값으로 'Anonymous(익명)'을 설정한다. 즉, 클라이언트가 닉네임을 지정하지 않은 경우 기본 값으로 'Anonymous'가 쓰이게 된다.
 
-  위 코드에 `socket["nickname"] = "Anonymous"`을 추가해준다. 기본 값으로 'Anonymous(익명)'을 설정함으로써 클라이언트가 닉네임을 지정하지 않은 경우 기본 값으로 'Anonymous' 를 사용하게 된다. 
 
-
-  #### `나를 제외한` 다른 모두에게 메시지를 전송하기 
-
-  이로써 Nickname이 있는 채팅방을 만들었다. 현재까지 클라이언트 측에서 메시지를 서버를 전송할 때 객체를 string으로 변환해서 사용하고, 
-
-  하지만 websocket의 복잡한 과정을 조금 더 쉽게 해주는 프레임워크가 있는데, 그것이 바로 `SocketIO`이다.
-  
   ### **4. SOCKETIO**
 
-  지금까지 다룬 `웹 소켓(WSS)`는 웹 소켓 규격에 맞춰 protocol을 실행시킨 것에 불과하다. 아직 완벽한 채팅 앱으로서는 부족하며 몇 가지 개선이 필요하다. 가령 여러 명이 참가한 방에서 socket 하나가 연결이 끊어지면 이를 자동으로 처리하거나, 연결된 모든 소켓들을 실시간으로 확인하고 업데이트하는 기능이 필요하다. 
+  지금까지 다룬 `웹 소켓(WSS)`는 웹 소켓 규격에 맞춰 protocol을 실행시킨 것에 불과하다. 아직 완벽한 채팅 앱으로서는 부족하며 몇 가지 개선이 필요하다. 가령 여러 명이 참가한 방에서 socket 하나가 연결이 끊어지면 이를 자동으로 처리하거나, 연결된 모든 소켓들을 실시간으로 확인하고 업데이트하는 기능이 필요하다. 다행히 websocket의 복잡함을 덜어주는 프레임워크가 있는데, 그것이 바로 `SocketIO`이다.
 
-  SocketIO란 실시간(real-time), 양방향(bidirectional), 이벤트에 기반하여 프런트엔드와 백엔드 간 소통을 가능하게 해주는 프레임워크이다. 어떤 플랫폼, 브라우저, 디바이스에 상관없이 사용 가능하다. Socket.IO는 `웹 소켓`을 지원하며, 만약 웹 소켓 사용이 불가능한 경 우에도 다른 전송 수단을 사용해서 실시간 연결을 지원한다는 점이 가장 큰 장점이자 특징이다.
+  `SocketIO`란 실시간(real-time), 양방향(bidirectional)으로, 이벤트에 기반(event-based)하여 프런트엔드와 백엔드 간 소통을 가능하게 해주는 프레임워크이다. 어떤 플랫폼, 브라우저, 디바이스에 상관없이 사용 가능하다. Socket.IO는 `웹 소켓`을 지원하며, 만약 웹 소켓 사용이 불가능한 경우에도 폴링(Polling), 롱 폴링(Long Polling) 등 다양한 전송 방식을 지원하여 최적의 통신 방법을 알아서 선택한다는 점이 가장 큰 장점이자 특징이다. Socket.IO는 기능적으로도 다양한 기능을 제공하여 채팅, 실시간 게임, 알림 시스템 등 다양한 실시간 애플리케이션을 쉽게 구축할 수 있다.
 
   #### socketIO 서버 만들기
 
@@ -451,10 +447,17 @@
   ```JavaScript
   // server.js
   import SocketIO from "socket.io";
-
+  ...
   const server = http.createServer(app);
   const io = SocketIO(server);
   ```
+  WebSocket 서버를 만드는 방법을 상기해보자. HTTP 서버를 생성하고, 새로운 WebSocket을 HTTP 위에 쌓아 올렸다. 클라이언트는 HTTP를 통해 서버와 처음에 연결하고, 그 후에 WebSocket 연결을 통해 실시간 통신을 할 수 있게 된다. 반면에, Socket.IO를 사용하여 WebSocket 서버를 구축하는 것은 좀 더 추상화된 방법으로, 여러 개의 전송 방식을 사용하여 실시간 양방향 통신을 지원하는 프레임워크를 구축한다. 
+
+  `const server = http.createServer(app);` 는 Express 애플리케이션 app을 기반으로 HTTP 서버를 생성하는 부분이다. 생성된 HTTP 서버 객체가 server 변수에 저장된다.
+
+  `const io = SocketIO(server);` 는 Socket.IO 모듈을 사용하여 WebSocket 서버를 생성하는 부분이다. SocketIO(server)는 이전에 생성한 HTTP 서버 server를 기반으로 Socket.IO 서버를 생성한다. 생성된 Socket.IO 서버 객체가 io 변수에 저장된다.
+
+  즉, 위 코드는 Express 애플리케이션과 Socket.IO를 사용하여 동시에 HTTP 서버와 WebSocket 서버를 생성하고, 이 두 서버가 같은 포트를 공유하도록 설정하는 부분입니다. 이렇게 함으로써 클라이언트는 HTTP를 통해 서버와 연결한 뒤 WebSocket 연결을 통해 실시간 통신을 할 수 있습니다. Socket.IO는 WebSocket을 기본적으로 지원하면서도 다양한 브라우저와 환경에서 실시간 통신을 보다 호환성 있게 처리할 수 있도록 도와줍니다.
 
   socketIO를 생성하면, `localhost:3000/socket.io/socket.io.js` 라는 url 이 자동으로 생성된다. 
 
