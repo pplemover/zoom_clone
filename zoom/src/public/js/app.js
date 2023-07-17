@@ -1,4 +1,4 @@
-
+const socket = io();
 
 // ----------------- WebSocket ----------------
 // const messageList = document.querySelector("ul");

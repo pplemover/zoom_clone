@@ -471,7 +471,27 @@
   script(src="/socket.io/socket.io.js")
   ```
 
-  backend에서 connection을 받을 준비를 한다. 
+  아래는 백엔드에서 클라이언트가 소켓 연결을 시도할 때 발생하는 이벤트를 처리하는 코드이다. 
+
+  ```JavaScript
+  // server.js
+  io.on("connection", socket => { // 클라이언트가 서버에 접속하면 connection 이벤트 발생 
+    console.log(socket); //
+  });
+  ``` 
+  `socket`은 클라이언트와 연결된 소켓 객체이며, 각 클라이언트마다 하나의 소켓이 생성된다.
+
+  ```JavaScript
+  const socket = io();
+  ```
+  위 코드는 프런트엔드에서 백엔드로의 연결을 도와준다.
+
+  io function은 알아서 socket.io를 실행하고 있는 서버를 찾을 것이다. 우리는 지금 연결된 모든 socket을 자동적으로 추적하고 있다. 
+
+  ![테스트완료](./images/readme_socketioconsole.png)
+
+  전에는 sockets.push(socket)을 써야 했다. 이제는 정말 쉽게 sockets에서 socket id를 볼 수 있다.
+
 
 
 
