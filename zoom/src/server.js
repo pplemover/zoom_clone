@@ -52,4 +52,4 @@ io.on("connection", socket => {
 const handleListen = () => console.log('Listening on http://localhost:3000');
 // 서버가 시작될 때 'Listening on~' 메시지를 출력하는 handleListen 함수 정의 
 server.listen(3000, handleListen);
-// HTTP 서버를 3000번 포트에서 시작함. 
+// HTTP 서버를 3000번 포트에서 시작함.
