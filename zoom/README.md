@@ -484,17 +484,36 @@
 
   #### FE to BE
 
-  아래 코드는 프런트엔드에서 백엔드로의 연결을 도와준다. 
+  아래 코드는 프런트엔드(app.js)에서 socket을 백엔드로와 연결해준다. 
   ```JavaScript
   // app.js
   const socket = io();
   ```
-  `io` 함수는 자체적으로 socket.io를 실행하고 있는 서버를 찾아서 연결을 도와주는 역할을 한다. socketIO에는 이미 room 기능이 있다.
+  `io` 함수는 자동으로 백엔드에서 실행하고 있는 socket.io 서버를 찾아서 연결을 도와주는 함수이다. socketIO에는 이미 room 기능이 있다. 아래와 같이 `npm run dev` 실행 후 브라우저에서 localhost:3000에 접속하면, node.js와 연결된 소켓 정보가 출력된다.
   ![테스트완료](./images/readme_socketioconsole.png)
 
+  Websocket에서 임의로 가상의 데이터베이스를 생성하고 소켓 정보를 넣어줬떤 것과 다르게, 자동으로 현재 연결된 소켓 정보가 저장되어 있다.
   #### 방(room) 만들기
 
-  tkw 
+  socketIO를 이용하면 방(room)에 참가하고 떠나는 것이 간단하다. 클라이언트 측에서 socket.io의 `emit()` 메서드를 통해 소켓에 원하는 이벤트(custom event)를 전달할 수 있다.
+
+  ```JavaSCript
+  // app.js
+  function handleRoomSubmit(event){
+    event.preventDefault();
+    const input = form.querySelector('input');
+
+    socket.emit("enter_room", input.value);
+    input.value = "";
+  }
+  ```
+  내가 임의로 지정한 'enter_room'이라는 이름의 이벤트를 소켓에 전달하고, 2, 3, ... n-1번째 인자로 원하는 값을 함께 전달할 수 있다. 
+
+  서버 측에서는 'enter_room' 이벤트를 전달받아서 다음과 같이 활용할 수 있다.
+  ```JavaScript
+  // server.js
+  const httpServer
+  ```
 
 
   ### **5. VIDEO CALL**

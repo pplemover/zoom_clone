@@ -1,5 +1,8 @@
 const socket = io();
 
+const welcome = document.getElementById("welcome")
+const form = welcome.querySelector('form');
+
 // ----------------- WebSocket ----------------
 // const messageList = document.querySelector("ul");
 // const nickForm = document.querySelector("#nickname");
