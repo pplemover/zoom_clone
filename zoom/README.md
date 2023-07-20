@@ -450,20 +450,17 @@
   ...
   const server = http.createServer(app);
   const io = SocketIO(server);
-  ```
-  이전에 WebSocket 서버를 만든 방법을 상기해보자. HTTP 서버를 생성하고, 새로운 WebSocket을 HTTP 위에 쌓아 올렸다. 클라이언트는 HTTP를 통해 서버와 처음에 연결하고, 그 후에 WebSocket 연결을 통해 실시간 통신을 할 수 있게 된다. Socket.IO를 사용하여 WebSocket 서버를 구축하는 것도 유사하다. 
-
-  `const server = http.createServer(app);` 는 Express 애플리케이션 app을 기반으로 HTTP 서버 객체를 생성하여 server 변수에 저장하는 부분이다.
-
-  `const io = SocketIO(server);` 는 Socket.IO 모듈을 사용하여 이전에 생성한 HTTP 서버 server를 기반으로 Socket.IO 서버를 생성한다
-
-  즉, 동시에 HTTP 서버와 WebSocket 서버를 생성하여 이 두 서버가 같은 포트를 공유하도록 설정한다. 
-
-  ```JavaScript
+  ...
   server.listen(3000, handleListen);
   // HTTP 서버를 3000번 포트에서 시작함. 
   ```
-  socket.io를 서버 단에 설치했다면, 클라이언트 측 브라우저에서도 socket.io를 설치해야 한다. socket.io 라이브러리를 제공하는 CDN 서버에서 파일을 직접 불러올 수 있다. 아래처럼 HTML 파일에 스크립트를 추가한다.
+  이전에 WebSocket 서버를 만든 방법을 상기해보면, HTTP 서버를 생성한 후 새로운 WebSocket을 HTTP 위에 쌓아 올렸다. 클라이언트는 HTTP를 통해 서버와 처음에 연결하고, 그 후에 WebSocket 연결을 통해 실시간 통신을 할 수 있게 된다. Socket.IO도 이와 유사하다. 
+
+  `const server = http.createServer(app);` 는 Express 애플리케이션 app을 기반으로 HTTP 서버 객체를 생성하여 server 변수에 저장하는 부분이다.
+
+  `const io = SocketIO(server);` 는 Socket.IO 모듈을 사용하여 이전에 생성한 HTTP 서버 server를 기반으로 Socket.IO 서버를 생성한다. 즉, 동시에 HTTP 서버와 WebSocket 서버를 생성하여 이 두 서버가 같은 포트를 공유하도록 설정한다. 
+
+  socket.io를 서버 단에 설치했다면, 클라이언트 측 브라우저에서도 socket.io를 설치해야 한다. socket.io 라이브러리를 제공하는 CDN 서버에서 파일을 직접 불러오기 위해 아래와 같이 HTML 파일에 스크립트를 추가한다.
   
   ```HTML
   <!--home.pug-->
@@ -492,7 +489,7 @@
   `io` 함수는 자동으로 백엔드에서 실행하고 있는 socket.io 서버를 찾아서 연결을 도와주는 함수이다. socketIO에는 이미 room 기능이 있다. 아래와 같이 `npm run dev` 실행 후 브라우저에서 localhost:3000에 접속하면, node.js와 연결된 소켓 정보가 출력된다.
   ![테스트완료](./images/readme_socketioconsole.png)
 
-  Websocket에서 임의로 가상의 데이터베이스를 생성하고 소켓 정보를 넣어줬떤 것과 다르게, 자동으로 현재 연결된 소켓 정보가 저장되어 있다.
+  Websocket에서 임의로 가상의 데이터베이스를 생성하고 소켓 정보를 넣어주었던 것과 다르게, socket.io 방식은 자동으로 현재 연결된 소켓 정보를 저장한다.
   #### 방(room) 만들기
 
   socketIO를 이용하면 방(room)에 참가하고 떠나는 것이 간단하다. 클라이언트 측에서 socket.io의 `emit()` 메서드를 통해 소켓에 원하는 이벤트(custom event)를 전달할 수 있다.
@@ -509,15 +506,39 @@
   ```
   내가 임의로 지정한 'enter_room'이라는 이름의 이벤트를 소켓에 전달하고, 2, 3, ... n-1번째 인자로 원하는 값을 함께 전달할 수 있다. 
 
-  서버 측에서는 `enter_room` 이벤트를 전달받아서 다음과 같이 활용할 수 있다.
+  서버 측에서는 `enter_room` 이벤트를 전달받아서 다음과 같이 활용할 수 있다. 클라이언트에서 전달 받은 이벤트인 'enter_room'에 대해, 두 번째 인자를 통해 전달 받은 값을 msg 변수에 저장하고, 콘솔에 출력한다. websocket을 사용할 때와 다르게, 데이터를 object에서 string 타입으로 변환해서 전달하지 않아도 된다. 
   ```JavaScript
   // server.js
   const httpServer = http.createServer(app);
   const io = SocketIO(httpServer);
+
+  io.on("connection", (socket) => {
+    socket.on("enter_room", (roomName) => {
+      console.log(socket.id); // 현재 소켓의 id 출력
+      console.log(socket.rooms); // 현재 소켓이 포함된 채팅방 목록 출력
+      socket.join(roomName); // 현재 소켓을 roomName이라는 채팅방에 참가(채팅방 입장)
+      console.log(socket.rooms)
+      console.log(roomName)
+    });
+  });
   ```
-  클라이언트에서 전달 받은 이벤트인 'enter_room'에 대해, 두 번째 인자를 통해 전달 받은 값을 msg 변수에 저장하고, 콘솔에 출력한다.
+  socket.id, socket.rooms, socket.join()을 사용하여 socket.io로 채팅방을 만들었다. 
 
+  #### 채팅방에 참가한 사용자(클라이언트)들에게 새로운 사용자가 참가했음을 알리기
 
+  `socket.to(roomName)`은 roomName이라는 이름의 채팅방에 있는 소켓 중 본인을 제외한 나저미 소켓에 메시지를 보내는 함수이다. 
+
+  ```HTML
+  <!--home.pug-->
+  ```
+
+  ```JavaScript
+  // server.js
+  ```
+
+  ```JavaScript
+  // app.js
+  ```
   ### **5. VIDEO CALL**
 
     이 
