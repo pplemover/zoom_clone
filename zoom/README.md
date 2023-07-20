@@ -512,8 +512,10 @@
   서버 측에서는 `enter_room` 이벤트를 전달받아서 다음과 같이 활용할 수 있다.
   ```JavaScript
   // server.js
-  const httpServer
+  const httpServer = http.createServer(app);
+  const io = SocketIO(httpServer);
   ```
+  클라이언트에서 전달 받은 이벤트인 'enter_room'에 대해, 두 번째 인자를 통해 전달 받은 값을 msg 변수에 저장하고, 콘솔에 출력한다.
 
 
   ### **5. VIDEO CALL**
