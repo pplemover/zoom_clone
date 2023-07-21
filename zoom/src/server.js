@@ -17,11 +17,12 @@ app.get("/", (req, res) => res.render("home"));
 app.get("*", (req, res) => res.redirect("/"));
 //  Catch-all URL을 사용하여 모든 경로에 대한 GET 요청을 "/" 경로로 redirect
 
-const server = http.createServer(app);
-const io = SocketIO(server);
+const httpserver = http.createServer(app);
+// HTTP 서버 생성 (app은 Express 앱 객체)
+const io = SocketIO(httpserver);
 
-io.on("connection", socket => {
-  console.log(socket);
+io.on("connection", (socket) => {
+  socket.on("enter_room", (msg) => console.log(msg));
 });
 
 // const server = http.createServer(app);

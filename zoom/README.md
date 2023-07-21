@@ -144,10 +144,10 @@
 
   ### **3. WEBSOCKETS로 실시간 채팅 어플 만들기**
 
-  이 프로젝트에서 만들어 볼 실시간 채팅 어플리케이션은 익명으로 메시지를 보내고 받을 수 있으며, 사용자가 닉네임을 추가할 수 있도록 할 것이다. 사용자가 채팅방을 만들 수 있으며, 채팅방에 입장 및 퇴장하는 이벤트(예: 'oo님이 입장했습니다')도 추가할 것이다. 마지막으로, 채팅방에 현재 참여 중인 사용자 수를 확인하는 기능도 추가할 것이다.
+  이 프로젝트에서 만들어 볼 실시간 채팅 어플리케이션은 익명으로 메시지를 보내고 받을 수 있으며, 사용자가 닉네임을 추가할 수 있도록 할 것이다. 사용자가 채팅방을 만들 수 있으며, 채팅방에 입장 및 퇴장하는 이벤트(예: 'oo님이 입장했습니다')도 추가할 것이다. 마지막으로, 채팅방에 현재 참여 중인 사용자 수를 확인할 수 있도록 할 것이다.
 
   #### WebSocket 프로토콜 개념
-  실시간 통신을 가능하게 해주는 것은 WebSocket 프로토콜 덕분이다. HTTP 프로토콜의 가장 큰 특징은 stateless하다는 것이다. 그래서 실시간으로 request, response가 일어나지 않는다. 반면 WebSocket 프로토콜은 statefull 하기 때문에 HTTP와 다르게 지속적인 연결을 제공하며, 클라이언트와 서버 간 여러 데이터를 양방향으로 전송할 수 있다. HTTP는 클라이언트가 서버에 요청을 보내야만 서버에서 응답을 전송할 수 있다. 반면 WebSocket은 서버가 언제든 클라이언트에게 데이터를 푸쉬(push) 할 수 있으므로 실시간 업데이트가 가능하다. 또한 Websocket은 텍스트 기반인 HTTP 프로토콜과 다르게 이진(Binary) 형식으로 데이터를 주고받기 때문에 이미지, 오디오, 비디오 등과 같은 다양한 데이터 유형을 보다 효율적으로 전송할 수 있게 해준다. 
+  실시간 통신을 가능하게 해주는 것은 WebSocket 프로토콜 덕분이다. HTTP 프로토콜의 가장 큰 특징은 `stateless`하다는 것이다. 그래서 실시간으로 request, response가 일어나지 않는다. 반면 WebSocket 프로토콜은 `statefull` 하기 때문에 HTTP와 다르게 지속적인 연결을 제공하며, 클라이언트와 서버 간 여러 데이터를 양방향으로 전송할 수 있다. HTTP는 클라이언트가 서버에 요청을 보내야만 서버에서 응답을 전송할 수 있다. 반면 WebSocket은 서버가 언제든 클라이언트에게 데이터를 푸쉬(push) 할 수 있으므로 실시간 업데이트가 가능하다. 또한 Websocket은 텍스트 기반인 HTTP 프로토콜과 다르게 이진(Binary) 형식으로 데이터를 주고받기 때문에 이미지, 오디오, 비디오 등과 같은 다양한 데이터 유형을 보다 효율적으로 전송할 수 있게 해준다. 
 
   브라우저가 서버로 WebSocket 요청을 보내면, 서버는 이 요청을 수락하거나 거절한다. 연결이 성립되면, 서버는 클라이언트를 기억하기 때문에 사용자에게 메시지를 보낼 수 있다. 한 번 연결된 후에는 마치 Wi-Fi처럼 계속해서 실시간 연결이 유지된다. 브라우저와 서버 간에는 실시간으로 계속된 연결이 이루어진다. 
 
@@ -481,7 +481,7 @@
 
   #### FE to BE
 
-  아래 코드는 프런트엔드(app.js)에서 socket을 백엔드로와 연결해준다. 
+  아래 코드는 프런트엔드(app.js)에서 socket을 백엔드와 연결해준다. 
   ```JavaScript
   // app.js
   const socket = io();
@@ -490,28 +490,48 @@
   ![테스트완료](./images/readme_socketioconsole.png)
 
   Websocket에서 임의로 가상의 데이터베이스를 생성하고 소켓 정보를 넣어주었던 것과 다르게, socket.io 방식은 자동으로 현재 연결된 소켓 정보를 저장한다.
+
   #### 방(room) 만들기
 
   socketIO를 이용하면 방(room)에 참가하고 떠나는 것이 간단하다. 클라이언트 측에서 socket.io의 `emit()` 메서드를 통해 소켓에 원하는 이벤트(custom event)를 전달할 수 있다.
 
   ```JavaSCript
   // app.js
+  const welcome = document.getElementById("welcome")
+  const form = welcome.querySelector('form');
+
   function handleRoomSubmit(event){
     event.preventDefault();
     const input = form.querySelector('input');
-
-    socket.emit("enter_room", input.value);
+    socket.emit("enter_room", { payload:input.value }); // object를 전송할 수 있다.
     input.value = "";
   }
   ```
-  내가 임의로 지정한 'enter_room'이라는 이름의 이벤트를 소켓에 전달하고, 2, 3, ... n-1번째 인자로 원하는 값을 함께 전달할 수 있다. 
+  임의로 정한 'enter_room'이라는 이름의 이벤트를 소켓에 emit(전달)한다. 다음 인자로 원하는 값을 함께 전달할 수 있다. websocket을 사용할 때와 다르게, 데이터를 object에서 string 타입으로 변환해서 전달하지 않아도 된다. 
 
-  서버 측에서는 `enter_room` 이벤트를 전달받아서 다음과 같이 활용할 수 있다. 클라이언트에서 전달 받은 이벤트인 'enter_room'에 대해, 두 번째 인자를 통해 전달 받은 값을 msg 변수에 저장하고, 콘솔에 출력한다. websocket을 사용할 때와 다르게, 데이터를 object에서 string 타입으로 변환해서 전달하지 않아도 된다. 
+  서버에서는 클라이언트에서 전달 받은 이벤트인 'enter_room'에 대해, 두 번째 인자를 통해 전달 받은 값을 msg 변수에 저장하고, 콘솔에 출력한다. 
   ```JavaScript
   // server.js
   const httpServer = http.createServer(app);
   const io = SocketIO(httpServer);
 
+  io.on("connection", (socket) => {
+    socket.on("enter_room", (msg) => console.log(msg));
+  });
+  ```
+
+
+
+
+
+
+
+
+
+
+
+  ```JavaScript
+  // server.js
   io.on("connection", (socket) => {
     socket.on("enter_room", (roomName) => {
       console.log(socket.id); // 현재 소켓의 id 출력
