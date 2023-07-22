@@ -157,10 +157,12 @@
   - `WebSocket.send(data)`: 서버로 메시지를 보낸다.
   - `WebSocket.close([code[, reason]])`: WebSocket 연결을 닫는다.
 
+  참고로 브라우저(클라이언트)에서는 이미 WebSocket API가 내장되어 있으므로, 프론트엔드 단에서는 별도의 설치가 필요하지 않다.
+
   #### ws 패키지
-  Node.js로 WebSocket 서버를 만들기 위해 `ws` 패키지를 사용할 수 있다. ws 패키지는 WebSocket 프로토콜의 핵심 기능만을 제공하므로 채팅방과 같은 고급 기능을 구현하기는 어렵다. 하지만 기본 기능을 테스트하고 WebSocket을 익히기 데에는 제격이다. 브라우저(클라이언트)에서는 이미 WebSocket API가 내장되어 있으므로, 프론트엔드 단에서는 별도의 설치가 필요하지 않다.
+  Node.js로 WebSocket 서버를 만들기 위해 `ws` 패키지를 사용할 수 있다. ws 패키지는 WebSocket 프로토콜의 핵심 기능만을 제공하므로 채팅방과 같은 고급 기능을 구현하기는 어렵다. 하지만 기본 기능을 테스트하고 WebSocket을 익히기 데에는 제격이다. 
   
-  터미널에서 `npm i ws` 명령어로 ws를 설치한다. 다음으로, http와 websocket를 동일한 서버 포트에서 동시에 처리하기 위해 server.js 코드를 아래와 같이 수정한다.
+  터미널에서 `npm i ws` 명령어로 ws를 설치한다. 아래 코드는 동일한 포트 번호를 사용하여 HTTP와 웹소켓 서버를 함께 실행하는 부분이다.
   ```JavaScript
   ...
   import WebSocket from 'ws';
@@ -171,10 +173,9 @@
 
   server.listen(3000, handleListen); // HTTP 서버를 3000번 포트에서 시작함. 
   ```
-  이렇게 하면 동일한 포트 번호를 사용하여 HTTP와 웹소켓 서버를 함께 실행할 수 있다. 간단히 말해, Express로 생성한 HTTP 서버를 웹소켓 서버로 '업그레이드'하여 실시간 양방향 통신을 지원할 수 있도록 하는 과정이다. 
+  간단히 말해, Express로 생성한 HTTP 서버를 웹소켓 서버로 '업그레이드'하여 실시간 양방향 통신을 지원할 수 있도록 하는 과정이다. 
 
   #### WebSocket Events
-
    백엔드 단에서는 다음과 같은 이벤트 핸들러를 사용하여 다양한 연결 상황을 처리할 수 있다: 
   - 1. `open`, `close` 이벤트: 웹소켓 연결의 열림이나 닫힘 상태를 확인할 때 사용한다. 
   - 2. `message` 이벤트: 서버가 클라이언트로부터 메시지를 수신했을 때 발생하는 이벤트이다. 서버는 전달받은 메시지 데이터를 분석하거나, 다른 클라이언트에게 메시지를 전달할 수 있다. 
@@ -185,7 +186,7 @@
   ```JavaScript
   // server.js
   function handleConnection(socket){
-  console.log(socket); // handleConnection 함수는 socket(WebSocket객체)를 콘솔창에 출력한다.
+    console.log(socket); // handleConnection 함수는 socket(WebSocket객체)를 콘솔창에 출력한다.
   }
   wss.on("connection", handleConnection); // on()메서드를 사용해 'connection' 이벤트 리스너를 등록함. connection 이벤트가 발생할 때, 즉 WebSocket과의 연결이 확립될 때 'handleConnection' 함수가 실행된다.
   ```
@@ -195,29 +196,24 @@
     console.log(socket);
   });
   ```
-  
 
   #### 프런트엔드에서 웹소켓 연결 생성하기 
-  
-  WebSocket 객체를 생성하기 위해서는 현재 웹 페이지의 호스트 주소를 동적으로 가져와야 한다. 프런트엔드(app.js)에서 다음 코드를 작성한다.
+  프런트엔드에서 단에서 WebSocket 객체를 생성하기 위해서는 현재 웹 페이지의 호스트 주소를 동적으로 가져와야 한다. 프런트엔드(app.js)에서 다음 코드를 작성한다.
   ```JavaScript
+  // app.js
   const socket = new WebSocket(`ws://${window.location.host}`)
   ```
-  위 코드는 현재 접속한 클라이언트의 호스트 주소에 대한 WebSocket 연결을 시도한다. app.js에 생성된 socket 객체는 서버로의 연결을 뜻하며, 이를 사용하면 연결 상태 변화에 대한 다양한 이벤트를 처리할 수 있다. 'onopen', 'onclose', 'onmessage', 'onerror' 등의 이벤트 핸들러를 등록하여 연결 상태 및 서버로부터 수신된 데이터에 대한 작업을 수행할 수 있다.
-  - socket 객체의 'send()' 메서드를 사용하여 서버로 데이터를 전송할 수 있다.
-  - socket 객체의 'onmessage' 이벤트 핸들러를 등록하여 서버로부터 수신된 데이터를 처리할 수 있다.
-  - socket 객체의 'close()' 메서드를 사용하여 WebSocket 연결을 종료할 수 있다.
+  현재 접속한 클라이언트의 호스트 주소에 대한 WebSocket 연결을 시도한다. 예를 들어 웹페이지가 'example.com'에서 로드되었다면, 웹소켓은 'ws://example.com' 주소로 연결을 시도하게 된다. 이렇게 생성된 socket 객체를 활용하여 연결 상태 변화에 대한 다양한 이벤트를 처리할 수 있다. 서버로 데이터를 전송하거나 (`socket.send(data)`), 서버로부터 수신된 데이터를 처리하거나 (`onmessage` 이벤트 핸들러), WebSocket 연결을 종료할 수 있다(`socket.close()`).  
   
 
   #### 웹소켓 연결상태에서 메시지 주고받기 (from BE to FE)
-  
-  이제 WebSocket 서버와 클라이언트 간의 상호작용을 구현한다. 아래 코드는 연결 성공 시 서버가 `send()` 메서드를 사용하여 클라이언트에게 'hello!' 메시지를 전송하는 부분이다. 
+  이제 본격적으로 WebSocket 서버와 클라이언트 간의 상호작용을 구현한다. 아래 코드는 연결 성공 시 서버가 `send()` 메서드를 사용하여 클라이언트에게 'hello!' 메시지를 전송하는 부분이다. 
   ```JavaScript
   // server.js
-  wss.on("connection", (socket) => {
-    console.log("Connected to Browser ✔"); // 연결 성공
-    socket.on("close", () => console.log('Disconnected from Browser ⛔')); // 브라우저와 연결 종료
-    socket.send("hello!"); // 클라이언트에게 메시지 전송
+  wss.on("connection", (socket) => { // 웹소켓 연결 시 실행되는 콜백 함수
+    console.log("Connected to Browser ✔"); 
+    socket.on("close", () => console.log('Disconnected from Browser ⛔')); // 웹소켓 연결 종료 시 이벤트 핸들링
+    socket.send("hello!"); // 클라이언트에게 데이터(메시지) 전송 
   });
   ```
 
