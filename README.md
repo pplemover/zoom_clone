@@ -470,9 +470,8 @@
   ![소켓정보](./zoom/images/readme_socketioconsole.png)
 
   #### 방(room) 만들기
-  socketIO를 이용하면 방(room)에 참가하고 떠나는 것이 간단해진다. 클라이언트 측에서 socket.io의 `emit()` 메서드를 통해 소켓에 원하는 이벤트(custom event)를 전달할 수 있다.
-
-  ```JavaSCript
+  SocketIO를 이용하면 방(room)에 참가하고 떠나는 것이 간단해진다. 클라이언트 측에서 socket.io의 `emit()` 메서드를 통해 소켓에 원하는 이벤트(custom event)를 전달할 수 있다.
+  ```JavaScript
   // app.js
   const welcome = document.getElementById("welcome")
   const form = welcome.querySelector('form');
@@ -482,11 +481,11 @@
     const input = form.querySelector('input');
     socket.emit("enter_room", { payload:input.value }); // object를 전송할 수 있다.
     input.value = "";
-  }
+  };
   ```
-  임의로 정한 'enter_room'이라는 이름의 이벤트를 소켓에 emit(전달)한다. 다음 인자로 원하는 값을 함께 전달할 수 있다. websocket을 사용할 때와 다르게, 데이터를 object에서 string 타입으로 변환해서 전달하지 않아도 된다. 
-
-  서버에서는 클라이언트에서 전달 받은 이벤트인 'enter_room'에 대해, 두 번째 인자를 통해 전달 받은 값을 msg 변수에 저장하고, 콘솔에 출력한다. 
+  임의로 정한 'enter_room'이라는 이름의 이벤트를 소켓에 `emit`(전달)한다. 다음 인자로 원하는 값을 함께 전달할 수 있다. websocket을 사용할 때와 다르게, 데이터를 object에서 string 타입으로 변환해서 전달하지 않아도 된다.
+  
+  서버에서는 클라이언트에서 전달 받은 이벤트인 'enter_room'에 대해 두 번째 인자를 통해 전달 받은 값(payload:input.value)을 msg 변수에 저장하고, 콘솔에 출력한다.
   ```JavaScript
   // server.js
   const httpServer = http.createServer(app);
@@ -496,26 +495,15 @@
     socket.on("enter_room", (msg) => console.log(msg));
   });
   ```
-
-
-
-
-
-
-
-
-
-
-
   ```JavaScript
   // server.js
   io.on("connection", (socket) => {
     socket.on("enter_room", (roomName) => {
-      console.log(socket.id); // 현재 소켓의 id 출력
+      console.log(socket.id);    // 현재 소켓의 id 출력
       console.log(socket.rooms); // 현재 소켓이 포함된 채팅방 목록 출력
-      socket.join(roomName); // 현재 소켓을 roomName이라는 채팅방에 참가(채팅방 입장)
+      socket.join(roomName);     // 현재 소켓을 roomName이라는 채팅방에 참가(채팅방 입장)
       console.log(socket.rooms)
-      console.log(roomName)
+      console.log(roomName) 
     });
   });
   ```
