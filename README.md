@@ -206,7 +206,7 @@
   현재 접속한 클라이언트의 호스트 주소에 대한 WebSocket 연결을 시도한다. 예를 들어 웹페이지가 'example.com'에서 로드되었다면, 웹소켓은 'ws://example.com' 주소로 연결을 시도하게 된다. 이렇게 생성된 socket 객체를 활용하여 연결 상태 변화에 대한 다양한 이벤트를 처리할 수 있다. 서버로 데이터를 전송하거나 (`socket.send(data)`), 서버로부터 수신된 데이터를 처리하거나 (`onmessage` 이벤트 핸들러), WebSocket 연결을 종료할 수 있다(`socket.close()`).  
   
 
-  #### 웹소켓 연결상태에서 메시지 주고받기 (from BE to FE)
+  #### 서버에서 클라이언트로 메시지 전송해 보기
   이제 본격적으로 WebSocket 서버와 클라이언트 간의 상호작용을 구현한다. 아래 코드는 연결 성공 시 서버가 `send()` 메서드를 사용하여 클라이언트에게 'hello!' 메시지를 전송하는 부분이다. 
   ```JavaScript
   // server.js
@@ -224,20 +224,19 @@
     console.log("Connected to Server ✔")
   });
   ```
-  메시지를 받을 때마다, 혹은 연결이 끊어졌을 때 실행될 이벤트 리스너도 추가해준다.
+  같은 원리로 메시지를 받을 때마다, 혹은 연결이 끊어졌을 때 실행될 이벤트 리스너도 추가해준다.
   ```JavaScript
   // app.js
   socket.addEventListener("message", (message) => {
     console.log("You got this: ", message, "from the server");
   });
-
   socket.addEventListener("close", () => {
-      console.log("Disconnected from Server ⛔");
+    console.log("Disconnected from Server ⛔");
   });
   ``` 
 
   성공적으로 연결된다면, 크롬 개발자도구의 콘솔창에 `Connected to Server ✔` 를 확인할 수 있다. 또한, 서버가 `send()` 메서드로 전송한 메시지를 볼 수 있다. 
-  ![메시지확인](./images/readme_messagevent.png)
+  ![메시지확인](./zoom/images/readme_messagevent.png)
 
   `data: "hello!"`와 `timeStamp: 2149.2000000476837`를 확인할 수 있다. 이를 활용해 'message' 객체에 담긴 실제 데이터('hello!')를 가져와 출력할 수 있다.
   ```JavaScript
@@ -247,37 +246,34 @@
   });
   ```
   실행결과는 아래와 같다.
-  ![메시지확인](./images/readme_messagevent2.png)
+  ![메시지확인](./zoom/images/readme_messagevent2.png)
 
   서버와의 연결이 종료된다면 'close' 이벤트 리스너가 실행된다.
-  ![섭종료](./images/readme_terminate.png)
+  ![섭종료](./zoom/images/readme_terminate.png)
   
-  #### 웹소켓 연결상태에서 메시지 주고받기 (from FE to BE)
-  
+  #### 클라이언트에서 서버로 메시지 전송해 보기
+  이번에는 프런트엔드 단에서 `send()` 메서드를 사용하여 서버에게 메시지를 전송해 본다. 
   ```JavaScript
   // app.js
-  setTimeout(() => {
-    socket.send(JSON.stringify("hello from the browser" ));
-  }, 1000);
+  setTimeout(() => { // setTimeout 함수를 사용
+    socket.send(JSON.stringify("hello from the browser" )); // send() 메서드로 문자열을 JSON 형식으로 변환하여 WebSocket으로 변환 
+  }, 1000); // 1초(1000밀리초) 후에 실행
 
   // server.js
-  wss.on("connection", (socket) => {
-    socket.on("message", (data) => {
-      const message = JSON.parse(data);
-      console.log(message);
+  wss.on("connection", (socket) => { // 클라이언트가 WebSocket으로 서버에 연결하면 
+    socket.on("message", (data) => { // 수신된 데이터를 
+      const message = JSON.parse(data); // 'JSON.parse(data)'를 통해 JSON 형식에서 JavaScript 객체로 변환
+      console.log(message); // 변환된 메시지를 서버 콘솔에 출력.
     });
   });
   ```
-  클라이언트(`app.js`)에서 1초 후에 'hello from the browser' 라는 메시지를 서버로 전송한다. 서버(`server.js`)에서는 클라이언트로부터 수신한 message를 콘솔에 출력한다. 
+  1초 후에 'hello from the browser' 라는 메시지가 콘솔에 출력된다. 클라이언트가 서버로 문자열을 보낼 때는 바이너리 형태로 전달된다. 따라서 JSON 형식을 사용하여 데이터를 인코딩하여 전송하고 디코딩해야 함을 주의해야 한다.
 
-  클라이언트에서 보낸 문자열은 서버에서 수신할 때 바이너리 형태로 전달되므로 JSON 형식을 사용하여 데이터를 인코딩하여 전송하고 디코딩해야 함을 주의해야 한다.
-
-  front-end와 back-end가 양방향으로 연결되었다. 성공적인 연결 때는 서버(왼쪽), 클라이언트(오른쪽)에서 성공 메시지를 확인할 수 있다.  
-  ![테스트완료](./images/readme_connecttest.png)
+  이로써 front-end와 back-end가 양방향으로 연결되었음을 확인할 수 있다. 성공적인 연결 때는 서버(왼쪽), 클라이언트(오른쪽)에서 성공 메시지를 확인할 수 있다.  
+  ![테스트완료](./zoom/images/readme_connecttest.png)
 
   #### 웹소켓 연결상태에서 메시지 주고받기 (from BE to FE)
-
-  (1) FE에서 메시지 입력할 폼 만들어주기 - 폼(form)의 제출(submit) 이벤트가 발생했을 때 form에 적은 메시지를 콘솔창에 출력해보자. 먼저 form 태그를 `app.js`에서 `document.querySelector`로 찾아준다. 
+  (1) FE에서 메시지 입력할 폼 만들어주기 - 폼(form)의 제출(submit) 이벤트가 발생했을 때 form에 적은 메시지를 개발자 도구의 콘솔창에 출력해보도록 한다. 
   ```JavaScript
   // app.js
   const messageForm = document.querySelector("form");
@@ -290,36 +286,37 @@
 
   messageForm.addEventListener("submit", handleSubmit); // 폼이 제출될 때 handleSubmit 함수가 호출됨
   ```
-  ![폼테스트완료](./images/readme_formtest.png)
-  폼에 hello 라고 입력하면, 콘솔창에 hello를 확인할 수 있다. 정상 동작함을 확인하였으므로, 이제 콘솔창이 아닌 서버에 전송하기 위해 아래와 같이 코드를 수정한다. 
+  ![폼테스트완료](./zoom/images/readme_formtest.png)
+  폼에 hello 라고 입력하면, 콘솔창에 hello를 확인할 수 있다. 코드가 정상 동작함을 확인하였으므로, 이제 실제 서버에 전송하기 위해 아래와 같이 코드를 수정한다. 
 
-  (2) FE 입력 폼에서 적은 메시지를 BE로 보내기 
+  (2) 폼에서 적은 메시지를 BE로 보내기 
   ```JavaScript
   // app.js
   function handleSubmit(event){
     event.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
-    const input = messageForm.querySelector("input"); // input 태그를 찾아서,
+    const input = messageForm.querySelector("input"); 
     socket.send(JSON.stringify(input.value));  // WebSocket을 통해 'value' 값을 서버로 전송
     input.value = ""; // 사용자가 메시지를 전송한 후에 입력 필드를 비움
   };
   ```
-  폼에 입력한 데이터는 백엔드로 넘어간다. 클라이언트 측에서 메시지를 서버로 전송할 때 객체를 string으로 변환해서 사용해야 한다는 점을 주의한다. 
+  클라이언트 측에서 메시지를 서버로 전송할 때 객체를 string으로 변환해서 사용해야 한다는 점을 주의한다. 
 
   (3) BE에서 보낸 메시지를 FE로 보내기 
-
   ```JavaScript
   wss.on("connection", (socket) => {
     ...
     socket.on("message", (data) => {
       const message = JSON.parse(data); 
-      // 클라이언트로부터 받은 데이터는 message에 담김
+      // 클라이언트로부터 받은 데이터를 parse하여 message에 담는다.
       ...
       socket.send(message); 
-      // 클라이언트로부터 수신한 메시지를 클라이언트로 다시 보낸다.
+      // 클라이언트로 메시지를 전송한다. 
     });
   });
   ```
-  그렇다면 FE에서는 메시지가 어떻게 보일까? 아래는 app.js에서 프런트 단이 소켓이 메시지를 받으면 콘솔에 message.data를 출력하는 것에 대해 정의한 것이다.
+
+  (4) BE가 보낸 메시지를 FE에서 처리하기
+  아래는 app.js에서 프런트 단이 소켓이 메시지를 받으면 콘솔에 message.data를 출력하는 것에 대해 정의한 것이다.
   ```JavaScript
   // app.js
   socket.addEventListener("message", (message) => {
@@ -329,13 +326,9 @@
   따라서 크롬 브라우저의 콘솔창에 `You got this: ~` 형태의 메시지를 확인할 수 있다.
 
   #### 연결된 사용자(클라이언트) 정보를 서버에 저장하기
-
-  지금까지 한 것을 바탕으로 하면, 하나의 탭(클라이언트)은 각자 서버와 연결을 맺게 된다. 만약 서로 다른 클라이언트(브라우저 탭)에서 localhost:3000에 접속하더라도, 메시지를 전송한 탭의 콘솔에서만 메시지가 출력된다. 
-
-  하지만 실제로 채팅방을 구현하기 위해서는 사용자 간에 메시지를 주고받을 수 있는 형태로 실시간 연결을 구현해야 한다. 그러러면 어떤 사용자가 서버에 접속해 있는지 확인해야 한다. 서버가 어떤 클라이언트 소켓으로부터 메시지를 받으면, 서버에 연결된 모든 소켓의 정보가 저장된 `sockets`을 통해 모든 클라이언트에 메시지를 전송한다.
-
-  서버에 연결된 클라이언트 정보를 저장하기 위해, 가상의 데이터베이스를 서버 단(server.js)에 만들어서 사용해볼 것이다. 
-
+  현재로서는 하나의 브라우저 탭(클라이언트)은 서버와 개별적으로 연결을 맺고 있다. 즉, 서로 다른 클라이언트 간 통신은 불가능하다. 예를 들어 2개의 브라우저 탭을 localhost:3000에 동시에 연결했을 때, 한 탭에서 메시지를 전송하러다도 다른 탭에는 메시지가 전달되지 않는다. 하지만 실제 채팅방을 구현하기 위해서는 실시간으로 사용자 간에 메시지를 주고받을 수 있게 해야 한다. 
+  
+  선결되어야 하는 것은 어떤 사용자가 서버에 접속해 있는지 확인하는 것이다. 이를 위해 서버에 연결된 모든 소켓의 정보를 저장하기 위한 가상의 데이터베이스(`sockets`)를 서버 단(server.js)에 만들 것이다. 서버가 어떤 클라이언트 소켓으로부터 메시지를 받으면, `sockets`에 저장된 클라이언트들에게 메시지를 전송할 것이다.
   ```JavaScript
   // server.js
   const sockets = []; // sockets 배열은 서버에 연결된 모든 소켓을 담게 된다.
@@ -350,9 +343,9 @@
   });
 
   ```
-  콜백 함수는 연결된 각 클라이언트 소켓에 대해 실행되므로, 연결된 모든 클라이언트 정보가 `sockets`에 저장된다. 이제 하나의 클라이언트가 전송한 메시지를 서버와 연결된 모든 클라이언트에게 보낼 수 있게 된다.
+  콜백 함수는 연결된 각 클라이언트 소켓에 대해 실행되므로, 연결된 모든 클라이언트 정보가 `sockets`에 저장된다. 이제 하나의 클라이언트가 전송한 메시지를 서버와 연결된 모든 클라이언트에게 보낼 수 있다.
 
-  클라이언트가 새로운 메시지를 받으면 (message 이벤트) 새로운 li 태그를 생성하여 ul 태그에 넣을 것이다.
+  클라이언트는 서버로부터 메시지를 받으면 (message 이벤트) 새로운 li 태그를 ul 태그의 자식 요소로 생성할 것이다.
   ```JavaScript
   // app.js
   socket.addEventListener("message", (message) => {
@@ -362,13 +355,11 @@
   });
   ``` 
   이제 아래 이미지와 같이 메시지를 화면에서 확인할 수 있다.
-  ![테스트완료](./images/readme_messageonscreen.png)
+  ![테스트완료](./zoom/images/readme_messageonscreen.png)
 
 
   #### NickNames
-  
-  이제 사용자가 선호하는 nickname(별명)을 직접 입력 받아서 채팅에서 누가 말을 했는지 구분하려 한다. 이를 위해 닉네임을 입력 받는 폼을 만들 것이다. 그러나 닉네임이 앞서 작성했던 메시지 이벤트 핸들러에 의해 처리되지 않도록 폼을 JSON 객체 형식으로 변환하고, 'type' 속성을 추가해 일반적인 메시지와 구분할 것이다.
-
+  사용자에게 nickname(별명)을 직접 입력 받고, 일반적인 메시지와 닉네임을 함께 표시하려 한다. 이를 위해 닉네임을 입력 받는 폼을 만들고, 해당 폼이 제출되면 닉네임을 서버로 전송할 것이다. 단, 'type' 속성에 'nickname'을 추가하여 서버에서 일반적인 메시지와 닉네임을 구분할 수 있도록 할 것이다. 
   ```JavaScript
   // app.js
   function makeMessage(type, payload){
@@ -481,7 +472,7 @@
   const socket = io();
   ```
   `io` 함수는 자동으로 백엔드에서 실행하고 있는 socket.io 서버를 찾아서 연결을 도와주는 함수이다. socketIO에는 이미 room 기능이 있다. 아래와 같이 `npm run dev` 실행 후 브라우저에서 localhost:3000에 접속하면, node.js와 연결된 소켓 정보가 출력된다.
-  ![테스트완료](./images/readme_socketioconsole.png)
+  ![테스트완료](./zoom/images/readme_socketioconsole.png)
 
   Websocket에서 임의로 가상의 데이터베이스를 생성하고 소켓 정보를 넣어주었던 것과 다르게, socket.io 방식은 자동으로 현재 연결된 소켓 정보를 저장한다.
 
